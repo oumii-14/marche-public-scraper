@@ -80,12 +80,12 @@ ORDRE D'EXÉCUTION :
 scraper_consultations() → Navigation → Extraction → Classification → Enregistrement → Pagination → Fin
 
 ---
-   # remplissage des tables
+   # remplissage des tables (TEST)
 Table        	Rôle              	Nombre	
 Consultation	Offres scrapées	    563	
 Organisme	   Acheteurs publics   	 545	
 Categorie    	Catégories	           3	(Service\Fournitures\travaux)
-MotCle	      Mots-clés IT          18	
+MotCle	      Mots-clés IT           18	
 
 ## Démarrage rapide
 
