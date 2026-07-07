@@ -41,20 +41,9 @@ Outil automatisé de surveillance des appels d'offres publiés sur `marchespubli
 
 ## Semaine 2 — Développement du scraper 
 
-### 1. Architecture du scraper
-
-```
-Le projet utilise Selenium pour scraper les offres du site marchespublics.gov.ma. 
-Le fichier scrape.py extrait les données (Référence, Objet, Acheteur, Lieu, Budget).
-détecte les offres IT (18 mots-clés).
-classe en 3 catégories (Travaux, Fournitures, Services) et enregistre dans PostgreSQL via Django.
-
-Résultats : 271 offres, 34 offres IT, 39 pages parcourues (POUR TESTER).
-
-
 ```
 
-### 2. Fonctions principales
+### 1. Fonctions principales
 
 ## 🤖 Fonctions du scraper (scrape.py)
 
@@ -62,7 +51,7 @@ Le scraper est composé de **11 fonctions** qui travaillent ensemble pour automa
 
 ---
 
-### 📋 Tableau des fonctions
+### Tableau des fonctions
 
 11 fonctions organisées en 5 catégories :
 
