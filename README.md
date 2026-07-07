@@ -106,8 +106,7 @@ python manage.py createsuperuser
 # 6. Lancer le scraper
 python scraper/scrape.py
 
-# 7. Serveur web
-python manage.py runserver
+
 ```
 ## Technologies
 
