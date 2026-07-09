@@ -249,7 +249,7 @@ def enregistrer_offre(donnees, driver=None, url_detail=None):
         if budget and len(str(budget)) > 50:
             budget = str(budget)[:50]
 
-        Consultation.objects.create(
+        consultation = Consultation.objects.create(
             reference=ref,
             objet=donnees['objet'][:500],
             acheteur=acheteur,
@@ -260,6 +260,13 @@ def enregistrer_offre(donnees, driver=None, url_detail=None):
             est_annule=donnees.get('est_annule', False),
             categorie=categorie,
         )
+
+        if donnees.get('est_informatique') and donnees.get('objet'):
+            mots_trouves = [m.lower() for m in MOTS_CLES_IT if m.lower() in donnees['objet'].lower()]
+            if mots_trouves:
+                mots_qs = MotCle.objects.filter(mot__in=mots_trouves)
+                consultation.mots_cles.add(*mots_qs)
+
         print(f"   [OK] {ref} ajoutée (IT: {donnees['est_informatique']}, Budget: {budget or 'N/A'})")
         return True
     except Exception as e:

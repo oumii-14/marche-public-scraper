@@ -120,3 +120,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Configuration SMTP pour alertes email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'oumaimainejjarn@gmail.com'
+EMAIL_HOST_PASSWORD = 'xxkjbqdcexpwhxbr'
+DEFAULT_FROM_EMAIL = 'oumaimainejjarn@gmail.com'
