@@ -1,0 +1,6 @@
+Django==6.0.6
+psycopg2-binary==2.9.12  #  Permet à Django de se connecter à PostgreSQL
+selenium==4.45.0 # Contrôle le navigateur (Chrome) pour scraper le site automatiquement.
+webdriver-manager==4.1.2 # Télécharge automatiquement la bonne version de ChromeDriver
+playwright==1.61.0 # Outil alternatif à Selenium. Installé mais non utilisé (problème d'installation).
+python-dotenv==1.2.2 #  Gère les variables sensibles (mots de passe, clés API) dans un fichier .env.
