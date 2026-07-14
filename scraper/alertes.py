@@ -1,6 +1,7 @@
 """
 Module d'Alertes - Semaine 3
 Envoi automatique d'emails pour les nouvelles offres IT
+Mise a jour: 14/07/2026
 """
 
 import os
