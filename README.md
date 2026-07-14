@@ -125,4 +125,58 @@ python scraper/scrape.py
 | ChromeDriver | — | Pilote Chrome |
 
 
+## 📧 Module d'Analyse et Alerte (Semaine 3)
+
+### 🔍 Filtrage par mots-clés
+
+Le système détecte automatiquement les offres IT à l'aide de **18 mots-clés** :
+
+```python
+'informatique', 'logiciel', 'pc', 'développement', 'numérique',
+'digitalisation', 'serveur', 'cloud', 'réseau', 'télécom',
+'cybersécurité', 'données', 'site web', 'application', 'erp',
+'infrastructure', 'sécurité informatique', 'programmation'
+
+Mots-clés associés aux offres via la table Consultation.mots_cles
+
+📧 Alertes emails
+Le script scraper/alertes.py vérifie quotidiennement les nouvelles offres IT et envoie un email récapitulatif au décideur.
+
+Fonctionnement :
+
+Vérifie les offres IT sans alerte
+
+Construit un email récapitulatif
+
+Envoie l'email via SMTP (Gmail)
+
+Enregistre l'alerte dans la table Alerte
+
+Configuration SMTP :
+
+python
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tonemail@gmail.com'
+EMAIL_HOST_PASSWORD = 'motdepasse'
+DEFAULT_FROM_EMAIL = 'tonemail@gmail.com'
+Exemple d'email reçu :
+
+text
+📋 RÉCAPITULATIF DES OFFRES IT
+
+🔹 Référence : TEST-IT-002
+   Objet : Développement d'une application mobile...
+   Acheteur : Commune IZEMMOUREN
+   Date limite : 31/12/2026 14:00
+   Lieu : Casablanca
+   Budget : 250 000 MAD
+   Mots-clés : développement, application, digitalisation
+
+🔗 Consultez le dashboard pour plus d'informations.
+
+
+
 
