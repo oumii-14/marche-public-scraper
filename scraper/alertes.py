@@ -1,12 +1,9 @@
 """
 Module d'Alertes - Semaine 3
 Envoi automatique d'emails pour les nouvelles offres IT
-Mise a jour: 14/07/2026
 """
 
-import os
-import sys
-import django
+import os, sys, django
 from datetime import datetime, timedelta
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -50,13 +47,7 @@ def envoyer_alertes():
         date_lim = offre.date_limite.strftime('%d/%m/%Y') if offre.date_limite else "Non specifiee"
 
         lignes_email.append(
-            f"Reference : {offre.reference}\n"
-            f"   Objet : {offre.objet[:200]}\n"
-            f"   Acheteur : {offre.acheteur.nom}\n"
-            f"   Date limite : {date_lim}\n"
-            f"   Lieu : {offre.lieu_execution}\n"
-            f"   Budget : {budget}\n"
-            f"   Mots-cles : {mots}\n"
+            f"{offre.reference:<20} {offre.objet[:60]:<62} {offre.acheteur.nom:<30} {date_lim:<12}"
         )
 
         Alerte.objects.create(
@@ -69,11 +60,17 @@ def envoyer_alertes():
 
     sujet = f"[Marches Publics] {len(nouvelles)} nouvelle(s) offre(s) IT detectee(s)"
 
-    corps = "RECAPITULATIF DES OFFRES IT\n\n"
-    corps += f"Nouvelle(s) offre(s) IT detectee(s) :\n\n"
+    corps = "=" * 130 + "\n"
+    corps += "RECAPITULATIF DES OFFRES IT\n"
+    corps += f"Date : {datetime.now().strftime('%d/%m/%Y %H:%M')}\n"
+    corps += f"Total : {len(nouvelles)} nouvelle(s) offre(s) IT\n"
+    corps += "=" * 130 + "\n\n"
+    corps += f"{'Reference':<20} {'Objet':<62} {'Acheteur':<30} {'Date limite':<12}\n"
+    corps += "-" * 130 + "\n"
     for ligne in lignes_email:
         corps += ligne + "\n"
-    corps += "Consultez le dashboard pour plus d'informations.\n"
+    corps += "-" * 130 + "\n\n"
+    corps += "Consultez le dashboard : http://localhost:8501\n"
     corps += "---\n"
     corps += "Cet email est genere automatiquement par la Plateforme de veille des marches publics."
 

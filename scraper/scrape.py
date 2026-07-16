@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marche_public.settings')
 django.setup()
 
-from scraper.models import Consultation, Organisme, Categorie, MotCle
+from scraper.models import Consultation, Organisme, Categorie, MotCle, HistoriqueScraping, Configuration
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -24,20 +24,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
-# ============================================================
-# CONSTANTES
-# ============================================================
-MOTS_CLES_IT = ['informatique', 'logiciel', 'pc', 'développement', 'numérique',
-                'digitalisation', 'serveur', 'cloud', 'réseau', 'télécom',
-                'cybersécurité', 'données', 'site web', 'application', 'erp',
-                'infrastructure', 'sécurité informatique', 'programmation']
-
-
-def creer_mots_cles():
-    """Crée les mots-clés IT en base s'ils n'existent pas"""
-    for mot in MOTS_CLES_IT:
-        MotCle.objects.get_or_create(mot=mot)
-    print(f"   [OK] {MotCle.objects.count()} mots-clés en base")
+def get_mots_cles():
+    """Récupère la liste dynamique des mots-clés depuis la base de données"""
+    return [m.mot.lower() for m in MotCle.objects.all()]
 
 
 # ============================================================
@@ -63,29 +52,35 @@ def extraire_budget_simple(texte):
     return None
 
 
-def extraire_budget_depuis_detail(driver, url_offre):
-    """Va sur la page de détail d'une offre et récupère le budget, puis revient"""
+def extraire_categorie_depuis_detail(driver, url_offre):
+    """Va sur la page de détail, récupère la catégorie et le budget"""
     if not url_offre:
-        return None
+        return None, None
     try:
-        print(f"      [DÉTAIL] Récupération du budget...")
         driver.execute_script("window.open(arguments[0]);", url_offre)
         time.sleep(0.5)
         driver.switch_to.window(driver.window_handles[-1])
         time.sleep(1)
         body = driver.find_element(By.TAG_NAME, "body").text
+
+        # Extraire la catégorie depuis le body
+        cat_match = re.search(r'Catégorie\s*principale\s*:?\s*([^\n]+)', body)
+        categorie = cat_match.group(1).strip() if cat_match else None
+
+        # Extraire le budget
         budget = extraire_budget_simple(body)
-        if budget:
-            print(f"      [DÉTAIL] Budget trouvé: {budget}")
+
+        if budget or categorie:
+            print(f"      [DÉTAIL] catégorie={categorie}, budget={budget}")
         driver.close()
         driver.switch_to.window(driver.window_handles[0])
-        return budget
+        return categorie, budget
     except Exception as e:
         print(f"      [DÉTAIL] Erreur: {e}")
         if len(driver.window_handles) > 1:
             driver.close()
             driver.switch_to.window(driver.window_handles[0])
-        return None
+        return None, None
 
 
 def extraire_liens_offres(driver):
@@ -116,22 +111,15 @@ def extraire_liens_offres(driver):
     return liens
 
 
-def detecter_categorie_simple(objet):
-    """Détecte la catégorie à partir de l'objet"""
-    if not objet:
-        return "SERVICES"
-    t = objet.lower()
-    if any(mot in t for mot in ['travaux', 'construction', 'bâtiment', 'route', 'installation', 'chantier']):
-        return "TRAVAUX"
-    if any(mot in t for mot in ['fourniture', 'matériel', 'achat', 'pc', 'consommable', 'équipement']):
-        return "FOURNITURES"
-    if any(mot in t for mot in ['service', 'prestation', 'étude', 'conseil', 'informatique', 'maintenance', 'formation']):
-        return "SERVICES"
-    return "SERVICES"
-
-
 def get_ou_creer_categorie(nom_categorie):
     """Récupère ou crée une catégorie"""
+    if not nom_categorie:
+        return None
+    # Normalise le nom : "Services" -> "SERVICES", "Travaux" -> "TRAVAUX", "Fournitures" -> "FOURNITURES"
+    for key, label in Categorie.NOM_CHOICES:
+        if label.lower() == nom_categorie.lower():
+            nom_categorie = key
+            break
     cat, _ = Categorie.objects.get_or_create(
         nom=nom_categorie,
         defaults={'description': nom_categorie}
@@ -187,7 +175,8 @@ def extraire_donnees_offre(texte_offre):
 
         est_it = False
         if objet:
-            est_it = any(mot in objet.lower() for mot in MOTS_CLES_IT)
+            mots = get_mots_cles()
+            est_it = any(mot in objet.lower() for mot in mots) if mots else False
 
         est_annule = 'annul' in texte_offre.lower()
 
@@ -239,12 +228,29 @@ def enregistrer_offre(donnees, driver=None, url_detail=None):
         if not acheteur:
             return False
 
-        categorie_nom = detecter_categorie_simple(donnees['objet'])
-        categorie = get_ou_creer_categorie(categorie_nom)
-
+        # Par défaut : catégorie et budget depuis les données de la liste
+        categorie_nom = None
         budget = donnees['budget_estime']
-        if driver and url_detail and not budget:
-            budget = extraire_budget_depuis_detail(driver, url_detail)
+
+        # Si on a l'url de détail, on va chercher catégorie et budget sur la page
+        if driver and url_detail:
+            cat_from_detail, bud_from_detail = extraire_categorie_depuis_detail(driver, url_detail)
+            if cat_from_detail:
+                categorie_nom = cat_from_detail
+            if bud_from_detail:
+                budget = bud_from_detail
+
+        # Fallback si on n'a pas pu récupérer la catégorie depuis le détail
+        if not categorie_nom:
+            # extraire depuis l'objet du listing
+            if "Travaux" in donnees.get('objet', '') or "travaux" in donnees.get('objet', '').lower():
+                categorie_nom = "TRAVAUX"
+            elif "Fourniture" in donnees.get('objet', ''):
+                categorie_nom = "FOURNITURES"
+            else:
+                categorie_nom = "SERVICES"
+
+        categorie = get_ou_creer_categorie(categorie_nom)
 
         if budget and len(str(budget)) > 50:
             budget = str(budget)[:50]
@@ -262,12 +268,13 @@ def enregistrer_offre(donnees, driver=None, url_detail=None):
         )
 
         if donnees.get('est_informatique') and donnees.get('objet'):
-            mots_trouves = [m.lower() for m in MOTS_CLES_IT if m.lower() in donnees['objet'].lower()]
+            mots = get_mots_cles()
+            mots_trouves = [m for m in mots if m in donnees['objet'].lower()]
             if mots_trouves:
                 mots_qs = MotCle.objects.filter(mot__in=mots_trouves)
                 consultation.mots_cles.add(*mots_qs)
 
-        print(f"   [OK] {ref} ajoutée (IT: {donnees['est_informatique']}, Budget: {budget or 'N/A'})")
+        print(f"   [OK] {ref} ajoutée (Cat: {categorie_nom}, IT: {donnees['est_informatique']}, Budget: {budget or 'N/A'})")
         return True
     except Exception as e:
         print(f"   [ERREUR] Insertion: {e}")
@@ -282,13 +289,16 @@ def scraper_consultations():
     print("  SCRAPER - MARCHÉS PUBLICS")
     print("=" * 60)
 
-    creer_mots_cles()
+    MOTS_CLES_IT = get_mots_cles()  # dynamique depuis la base
+    print(f"   [OK] {len(MOTS_CLES_IT)} mots-clés en base")
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service)
 
     total = 0
+    total_offres = 0
     page_num = 1
+    erreur = None
 
     try:
         driver.get("https://www.marchespublics.gov.ma/bdc/entreprise/consultation/")
@@ -299,6 +309,7 @@ def scraper_consultations():
 
             body = driver.find_element(By.TAG_NAME, "body").text
             offres = extraire_toutes_offres(body)
+            total_offres += len(offres)
             print(f"   {len(offres)} offre(s) détectée(s)")
 
             liens_detail = extraire_liens_offres(driver)
@@ -371,10 +382,22 @@ def scraper_consultations():
                 break
 
     except Exception as e:
+        erreur = str(e)
         print(f"   [ERREUR] {e}")
 
     finally:
         driver.quit()
+
+    # Enregistrer l'historique du scraping
+    nb_it = Consultation.objects.filter(est_informatique=True).count()
+    config = Configuration.objects.first()
+    HistoriqueScraping.objects.create(
+        nb_consultations=total_offres,
+        nb_resultats=0,
+        nb_offres_it=nb_it,
+        statut=erreur or "Succès",
+        configuration=config,
+    )
 
     print("\n" + "=" * 60)
     print(f"  TERMINÉ : {total} nouvelle(s) offre(s) ajoutée(s)")

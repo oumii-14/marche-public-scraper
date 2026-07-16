@@ -1,0 +1,508 @@
+\documentclass[12pt,a4paper]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{acronym}
+
+\geometry{top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm}
+\setstretch{1.3}
+
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Veille Marchés Publics}
+\fancyhead[R]{EMSI}
+\fancyfoot[C]{\thepage}
+
+\graphicspath{{images/}}
+
+\begin{document}
+
+% ======================== PAGE DE GARDE ========================
+\begin{titlepage}
+\begin{center}
+\begin{minipage}{0.4\textwidth}
+\centering
+\includegraphics[width=5cm]{emsi-logo.png}
+\end{minipage}
+\hfill
+\begin{minipage}{0.4\textwidth}
+\centering
+\includegraphics[width=5cm]{honoris-logo.png}
+\end{minipage}
+
+\vspace{1.5cm}
+
+{\LARGE \textbf{RAPPORT DE STAGE}}
+
+\vspace{0.8cm}
+
+{\Large 3\ieme{} IIR -- INGÉNIERIE INFORMATIQUE ET RÉSEAUX}
+
+\vspace{2cm}
+
+\fbox{
+\begin{minipage}{0.85\textwidth}
+\centering
+\vspace{0.6cm}
+{\LARGE \textbf{DÉVELOPPEMENT D'UNE PLATEFORME}}\\[0.3cm]
+{\LARGE \textbf{DE VEILLE AUTOMATISÉE}}\\[0.3cm]
+{\LARGE \textbf{DES MARCHÉS PUBLICS (SCRAPER IT)}}
+\vspace{0.6cm}
+\end{minipage}
+}
+
+\vspace{1.5cm}
+
+\vspace{1.5cm}
+
+\begin{minipage}{0.5\textwidth}
+\begin{flushleft}
+\textbf{Réalisé par :} \\
+INEJJARN Oumaima
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+\begin{flushright}
+\textbf{Encadré par :} \\
+[Nom encadrant entreprise] \\
+[Nom encadrant pédagogique]
+\end{flushright}
+\end{minipage}
+
+\vspace{1cm}
+
+Année universitaire : 2025--2026
+\end{center}
+\end{titlepage}
+
+% ============ DÉDICACES ============
+\chapter*{Dédicaces}
+\addcontentsline{toc}{chapter}{Dédicaces}
+
+À mes parents, pour leur amour inconditionnel, leurs sacrifices et leur soutien constant. Leur encouragement a été le moteur de ma réussite. Que ce travail soit la fierté qu'ils méritent.
+
+À mes frères et sœurs, pour leur présence, leur soutien et leur compréhension tout au long de ce parcours.
+
+À mes formateurs et professeurs, pour leurs conseils précieux et leur dévouement à transmettre le savoir.
+
+À toutes les personnes qui ont contribué à la réalisation de ce projet, je dédie ce travail avec gratitude.
+
+% ============ REMERCIEMENTS ============
+\chapter*{Remerciements}
+\addcontentsline{toc}{chapter}{Remerciements}
+
+Au terme de ce travail, je tiens à exprimer ma profonde gratitude à toutes les personnes qui ont contribué à sa réalisation.
+
+Tout d'abord, je remercie sincèrement mon encadrant de stage, [Nom de l'encadrant entreprise], pour ses précieux conseils, sa disponibilité et son accompagnement tout au long de ce projet.
+
+Je remercie également mon encadrant pédagogique, [Nom de l'encadrant pédagogique], pour son suivi et ses orientations.
+
+Mes remerciements vont aussi à l'ensemble de l'équipe de la société 218labs pour leur accueil chaleureux et leur collaboration.
+
+Enfin, je remercie l'École Marocaine des Sciences de l'Ingénieur (EMSI) pour la formation de qualité qu'elle dispense.
+
+% ============ RÉSUMÉ ============
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+
+Dans un contexte où l'accès aux informations des marchés publics est essentiel pour les entreprises, la recherche manuelle quotidienne des appels d'offres représente une tâche chronophage et souvent inefficace.
+
+Ce projet de stage, réalisé au sein de la société 218labs, consiste à développer un outil automatisé de veille des appels d'offres publiés sur le portail marocain des marchés publics (\url{https://marchespublics.gov.ma}).
+
+La solution proposée repose sur un scraper développé en Python avec Selenium, couplé à une base de données PostgreSQL et un framework Django pour la gestion et la visualisation des données.
+
+\textbf{Mots clés :} Web Scraping, Python, Django, PostgreSQL, Selenium, Marchés publics, Automatisation.
+
+% ============ ABSTRACT ============
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+In a context where access to public procurement information is essential for businesses, the daily manual search for tenders represents a time-consuming and often inefficient task.
+
+This internship project, carried out at the company 218labs, consists of developing an automated monitoring tool for tenders published on the Moroccan public procurement portal (\url{https://marchespublics.gov.ma}).
+
+The proposed solution is based on a scraper developed in Python with Selenium, coupled with a PostgreSQL database and a Django framework for data management and visualization.
+
+\textbf{Keywords:} Web Scraping, Python, Django, PostgreSQL, Selenium, Public Procurement, Automation.
+
+% ============ LISTE DES ABRÉVIATIONS ============
+\chapter*{Liste des abréviations}
+\addcontentsline{toc}{chapter}{Liste des abréviations}
+
+\begin{acronym}
+\acro{API}{Application Programming Interface}
+\acro{BDD}{Base de Données}
+\acro{CMS}{Content Management System}
+\acro{CRM}{Customer Relationship Management}
+\acro{ERP}{Enterprise Resource Planning}
+\acro{EMSI}{École Marocaine des Sciences de l'Ingénieur}
+\acro{GED}{Gestion Électronique de Documents}
+\acro{IT}{Information Technology}
+\acro{KPI}{Key Performance Indicator}
+\acro{ORM}{Object-Relational Mapping}
+\acro{PFA}{Projet de Fin d'Année}
+\acro{SMTP}{Simple Mail Transfer Protocol}
+\acro{TIC}{Technologies de l'Information et de la Communication}
+\acro{UML}{Unified Modeling Language}
+\end{acronym}
+
+% ============ LISTE DES FIGURES ============
+\listoffigures
+
+% ============ LISTE DES TABLEAUX ============
+\listoftables
+
+% ============ TABLE DES MATIÈRES ============
+\tableofcontents
+
+% ============ INTRODUCTION ============
+\chapter*{Introduction générale}
+\addcontentsline{toc}{chapter}{Introduction générale}
+
+L'évolution rapide des technologies de l'information et de la communication (TIC) a profondément transformé les modes de travail et d'accès à l'information. Dans le secteur des marchés publics, la veille stratégique est devenue un enjeu majeur pour les entreprises souhaitant saisir des opportunités d'affaires.
+
+Au Maroc, le portail des marchés publics (\url{https://marchespublics.gov.ma}) publie quotidiennement des centaines d'appels d'offres. Cependant, la recherche manuelle de ces offres est une tâche chronophage et souvent inefficace.
+
+Dans ce contexte, ce projet de stage, réalisé au sein de la société 218labs, vise à développer une plateforme de veille automatisée des appels d'offres, avec un focus particulier sur le secteur IT.
+
+% ============ CHAPITRE 1 ============
+\chapter{Présentation de l'organisme d'accueil}
+
+\section*{Introduction du chapitre I}
+\addcontentsline{toc}{section}{Introduction du chapitre I}
+
+Ce premier chapitre présente la société d'accueil 218labs, son historique, ses missions et son positionnement sur le marché des solutions Open Source.
+
+\section{218labs -- Présentation}
+
+Fondée en 2012, la société 218labs est un intégrateur de solutions Open Source. Son métier est d'accompagner les organisations des secteurs public et privé dans leurs projets d'intégration de ces solutions.
+
+Son expertise couvre l'ensemble des besoins : CMS, CRM, ERP, GED, E-commerce, Extranet, applications métier.
+
+\section{Localisation}
+
+218labs est située à Casablanca, au Maroc.
+
+\section{Services et missions}
+
+Les prestations de 218labs s'articulent autour de cinq pôles principaux (Tableau~\ref{tab:services}) :
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Service} & \textbf{Description} \\
+\hline
+Conseil & Étude de faisabilité : une solution open source existe-t-elle pour votre besoin ? \\
+\hline
+Audit \& Qualification & Évaluation de la réponse des solutions open source à vos besoins. \\
+\hline
+Intégration \& Développement & Intégration des solutions open source dans votre système d'information. \\
+\hline
+Maintenance logicielle & Analyse des problèmes et mise en place des corrections. \\
+\hline
+Formation & Transfert de compétences vers vos équipes. \\
+\hline
+\end{tabular}
+\caption{Services et missions de 218labs}
+\label{tab:services}
+\end{table}
+
+\section*{Conclusion du chapitre I}
+\addcontentsline{toc}{section}{Conclusion du chapitre I}
+
+Ce stage au sein de 218labs m'a offert un cadre idéal pour appliquer mes compétences en ingénierie logicielle à un projet concret, dans un environnement maîtrisant les technologies Open Source.
+
+% ============ CHAPITRE 2 ============
+\chapter{Analyse et conception}
+
+\section*{Introduction du chapitre II}
+\addcontentsline{toc}{section}{Introduction du chapitre II}
+
+Ce chapitre présente l'analyse des besoins, la modélisation UML du système ainsi que la structure de la base de données.
+
+\section{Contexte et problématique}
+
+La recherche manuelle des appels d'offres est une tâche répétitive et coûteuse en temps. L'objectif est d'automatiser cette veille.
+
+\section{Objectifs du projet}
+
+\begin{itemize}
+\item Automatiser l'extraction des offres
+\item Filtrer les offres IT
+\item Alerter les décideurs par e-mail
+\item Visualiser les données via un dashboard
+\end{itemize}
+
+\section{Spécifications fonctionnelles}
+
+Les modules du projet sont : Collecte (Scraper), Stockage (PostgreSQL), Analyse et alerte (Filtrage, e-mail), Visualisation (Dashboard).
+
+\section{Modélisation UML}
+
+\subsection{Diagramme de cas d'utilisation}
+
+Le diagramme de cas d'utilisation (Figure~\ref{fig:usecase}) identifie deux acteurs :
+\begin{itemize}
+\item Le \textbf{Décideur} : consulte les offres, filtre par secteur IT, reçoit des alertes.
+\item Le \textbf{Système automatisé} : scrape les offres, gère la pagination, filtre, stocke et envoie les emails.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{use_case.png}
+\caption{Diagramme de cas d'utilisation}
+\label{fig:usecase}
+\end{figure}
+
+\subsection{Diagramme de classe}
+
+Le diagramme de classe (Figure~\ref{fig:class}) présente la structure statique de la base de données avec les tables : Consultation, Organisme, Categorie, MotCle, Alerte, Configuration et HistoriqueScraping.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{dclasse.png}
+\caption{Diagramme de classe}
+\label{fig:class}
+\end{figure}
+
+\subsection{Diagrammes de séquence}
+
+Trois diagrammes de séquence ont été réalisés :
+
+\begin{itemize}
+\item \textbf{Scénario 1} : Scraping automatique des offres (Figure~\ref{fig:seq_scrap})
+\item \textbf{Scénario 2} : Envoi d'alerte e-mail (Figure~\ref{fig:seq_email})
+\item \textbf{Scénario 3} : Consultation du dashboard (Figure~\ref{fig:seq_dash})
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{sequence_scenario1.png}
+\caption{Diagramme de séquence -- Scraping}
+\label{fig:seq_scrap}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{sequence_scenario2.png}
+\caption{Diagramme de séquence -- Alerte e-mail}
+\label{fig:seq_email}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{sequence_scenario3.png}
+\caption{Diagramme de séquence -- Consultation dashboard}
+\label{fig:seq_dash}
+\end{figure}
+
+\subsection{Diagramme d'activité}
+
+Le diagramme d'activité (Figure~\ref{fig:activite}) modélise le flux complet du scraping et de l'envoi d'alertes.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{diagramme_activite.png}
+\caption{Diagramme d'activité}
+\label{fig:activite}
+\end{figure}
+
+\section{Structure de la base de données}
+
+La base de données PostgreSQL contient 7 tables applicatives (Consultation, Organisme, Categorie, MotCle, Alerte, Configuration, HistoriqueScraping) et 10 tables générées automatiquement par Django.
+
+\section*{Conclusion du chapitre II}
+\addcontentsline{toc}{section}{Conclusion du chapitre II}
+
+L'analyse et la conception ont permis de structurer le projet et de définir les briques techniques nécessaires à sa réalisation.
+
+% ============ CHAPITRE 3 ============
+\chapter{Réalisation}
+
+\section*{Introduction du chapitre III}
+\addcontentsline{toc}{section}{Introduction du chapitre III}
+
+Ce chapitre détaille l'environnement technique, le cycle de développement et la mise en œuvre des différents modules du projet.
+
+\section{Environnement technique}
+
+La stack technique utilisée (Tableau~\ref{tab:stack}) :
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Technologie} & \textbf{Description} \\
+\hline
+Python 3.12 & Langage principal \\
+Django 6.0.6 & Framework web \\
+PostgreSQL 17 & Base de données \\
+Selenium 4.45.0 & Scraping \\
+Streamlit 1.35.0 & Dashboard \\
+Task Scheduler & Automatisation Windows \\
+\hline
+\end{tabular}
+\caption{Spécifications techniques}
+\label{tab:stack}
+\end{table}
+
+\section{Cycle de développement}
+
+Analyse $\rightarrow$ Conception UML $\rightarrow$ Développement $\rightarrow$ Tests $\rightarrow$ Déploiement.
+
+\section{Développement du scraper}
+
+\subsection{Extraction des données}
+
+Le scraper extrait : Référence, Objet, Acheteur, Date limite, Lieu d'exécution, Budget estimé.
+
+\subsection{Gestion de la pagination}
+
+Le scraper parcourt automatiquement toutes les pages du site (jusqu'à 107 pages).
+
+\subsection{Détection des offres IT}
+
+18 mots-clés utilisés : informatique, logiciel, pc, développement, numérique, digitalisation, serveur, cloud, réseau, télécom, cybersécurité, données, site web, application, erp, infrastructure, sécurité informatique, programmation.
+
+\section{Intégration des alertes e-mail}
+
+Configuration SMTP Gmail : smtp.gmail.com, port 587, TLS activé. Script \texttt{alertes.py} pour l'envoi automatique.
+
+\section{Automatisation des tâches}
+
+Task Scheduler : scraper à 8h, alertes à 9h chaque jour.
+
+\section*{Conclusion du chapitre III}
+\addcontentsline{toc}{section}{Conclusion du chapitre III}
+
+La réalisation technique a permis de concrétiser les spécifications. L'ensemble des modules est opérationnel.
+
+% ============ CHAPITRE 4 ============
+\chapter{Interfaces et résultats}
+
+\section*{Introduction du chapitre IV}
+\addcontentsline{toc}{section}{Introduction du chapitre IV}
+
+Ce chapitre présente les interfaces développées et les résultats obtenus après l'exécution du scraper.
+
+\section{Interface d'administration (Django)}
+
+L'interface Django permet de consulter, ajouter, modifier et supprimer les offres (Figure~\ref{fig:admin}).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{admin_django.png}
+\caption{Interface Admin Django}
+\label{fig:admin}
+\end{figure}
+
+\section{Dashboard Streamlit}
+
+Le dashboard (Figure~\ref{fig:dashboard}) affiche : total offres, offres IT, offres par mois/région/catégorie, top acheteurs.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{dashboard.png}
+\caption{Dashboard Streamlit}
+\label{fig:dashboard}
+\end{figure}
+
+\section{Alertes e-mail}
+
+Les alertes e-mail sont envoyées automatiquement pour les nouvelles offres IT (Figure~\ref{fig:email}).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{email_alerte.png}
+\caption{E-mail d'alerte reçu}
+\label{fig:email}
+\end{figure}
+
+\section{Résultats globaux}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Élément} & \textbf{Résultat} \\
+\hline
+Total des offres & 510 \\
+Offres IT & 58 \\
+Annulées & 19 \\
+Catégories & 3 \\
+\hline
+\end{tabular}
+\caption{Résultats finaux}
+\label{tab:resultats}
+\end{table}
+
+\section*{Conclusion du chapitre IV}
+\addcontentsline{toc}{section}{Conclusion du chapitre IV}
+
+Les résultats obtenus valident la pertinence de l'approche. Le système est fonctionnel et prêt à être déployé.
+
+% ============ CONCLUSION ============
+\chapter*{Conclusion générale et perspectives}
+\addcontentsline{toc}{chapter}{Conclusion générale et perspectives}
+
+Ce stage au sein de 218labs a été une expérience formatrice. Le projet m'a permis de maîtriser Python, Django, PostgreSQL, Selenium, Streamlit et l'automatisation.
+
+\textbf{Perspectives :}
+\begin{itemize}
+\item Améliorer le dashboard avec des graphiques interactifs
+\item Intégrer des KPIs
+\item Automatiser le déploiement via Docker
+\item Ajouter la détection des prestataires
+\end{itemize}
+
+% ============ BIBLIOGRAPHIE ============
+\begin{thebibliography}{9}
+\addcontentsline{toc}{chapter}{Bibliographie}
+
+\bibitem{django} Documentation Django. \url{https://docs.djangoproject.com/}
+\bibitem{postgresql} Documentation PostgreSQL. \url{https://www.postgresql.org/docs/}
+\bibitem{selenium} Documentation Selenium. \url{https://www.selenium.dev/documentation/}
+\bibitem{streamlit} Documentation Streamlit. \url{https://docs.streamlit.io/}
+\bibitem{marches} Site des marchés publics. \url{https://marchespublics.gov.ma/}
+\bibitem{smtp} Documentation SMTP Django. \url{https://docs.djangoproject.com/en/stable/topics/email/}
+\end{thebibliography}
+
+% ============ ANNEXES ============
+\appendix
+\chapter{Extrait du code scraper}
+\label{annexe:code}
+
+\begin{verbatim}
+def scraper_consultations():
+    driver = webdriver.Chrome(options=op)
+    driver.get("https://www.marchespublics.gov.ma/...")
+    time.sleep(8)
+    while page <= max_pages:
+        body = driver.find_element(By.TAG_NAME, "body").text
+        for bloc in body.split('BDC'):
+            # Extraction...
+            Consultation.objects.create(...)
+        driver.find_element(By.XPATH, "//a[...]").click()
+        time.sleep(6)
+\end{verbatim}
+
+\chapter{Exemple d'e-mail d'alerte}
+\label{annexe:email}
+
+[Capture d'écran de l'e-mail récapitulatif]
+
+\end{document}

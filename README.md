@@ -56,18 +56,17 @@ Le scraper est composé de **11 fonctions** qui travaillent ensemble pour automa
 11 fonctions organisées en 5 catégories :
 
 1. INITIALISATION
-   creer_mots_cles() → Crée les 18 mots-clés IT en base
+   get_mots_cles() → Récupère les mots-clés dynamiquement depuis la base MotCle
 
 2. EXTRACTION
    extraire_toutes_offres() → Découpe le texte en offres
    extraire_donnees_offre() → Extrait Référence, Objet, Acheteur, Lieu, Budget
    extraire_liens_offres() → Trouve les liens de détail
    extraire_budget_simple() → Cherche le budget dans le texte
-   extraire_budget_depuis_detail() → Budget depuis la page de détail
+   extraire_categorie_depuis_detail() → Budget + Catégorie depuis la page de détail
 
 3. CLASSIFICATION
-   detecter_categorie_simple() → Classe l'offre (Travaux, Fournitures, Services)
-   get_ou_creer_categorie() → Gère les catégories en base
+   get_ou_creer_categorie() → Gère les catégories en base (normalise Travaux/Fournitures/Services)
 
 4. GESTION DES DONNÉES
    get_ou_creer_organisme() → Gère les organismes acheteurs
@@ -77,15 +76,16 @@ Le scraper est composé de **11 fonctions** qui travaillent ensemble pour automa
    scraper_consultations() → Fonction principale qui pilote tout
 
 ORDRE D'EXÉCUTION :
-scraper_consultations() → Navigation → Extraction → Classification → Enregistrement → Pagination → Fin
+scraper_consultations() → Navigation → Extraction → Classification via page détail → Enregistrement → Pagination → Fin
 
 ---
+
    # remplissage des tables (TEST)
 Table        	Rôle              	Nombre	
 Consultation	Offres scrapées	    563	
 Organisme	   Acheteurs publics   	 545	
 Categorie    	Catégories	           3	(Service\Fournitures\travaux)
-MotCle	      Mots-clés IT           18	
+MotCle	      Mots-clés IT           19	
 
 ## Démarrage rapide
 
@@ -125,36 +125,31 @@ python scraper/scrape.py
 | ChromeDriver | — | Pilote Chrome |
 
 
-## 📧 Module d'Analyse et Alerte (Semaine 3)
+## Semaine 3 — Module d'Analyse et Alerte
 
-### 🔍 Filtrage par mots-clés
+### Mots-clés dynamiques
 
-Le système détecte automatiquement les offres IT à l'aide de **18 mots-clés** :
+Les mots-clés ne sont plus écrits en dur dans le code. Le decideur peut les ajouter/supprimer/modifier via `/admin/scraper/motcle/`. Le scraper lit automatiquement la liste mise à jour à chaque lancement via `get_mots_cles()`.
 
-```python
-'informatique', 'logiciel', 'pc', 'développement', 'numérique',
-'digitalisation', 'serveur', 'cloud', 'réseau', 'télécom',
-'cybersécurité', 'données', 'site web', 'application', 'erp',
-'infrastructure', 'sécurité informatique', 'programmation'
+### Catégorie extraite depuis la page de détail
 
-Mots-clés associés aux offres via la table Consultation.mots_cles
+La catégorie (Travaux/Fournitures/Services) est lue directement depuis le champ `Catégorie principale` de la page de détail de chaque offre sur le site, plus de détection basée sur l'objet.
 
-📧 Alertes emails
-Le script scraper/alertes.py vérifie quotidiennement les nouvelles offres IT et envoie un email récapitulatif au décideur.
+### 📧 Alertes emails
+
+Le script `scraper/alertes.py` vérifie quotidiennement les nouvelles offres IT et envoie un email récapitulatif au décideur.
 
 Fonctionnement :
 
-Vérifie les offres IT sans alerte
-
-Construit un email récapitulatif
-
-Envoie l'email via SMTP (Gmail)
-
-Enregistre l'alerte dans la table Alerte
+1. Vérifie les offres IT sans alerte
+2. Construit un email récapitulatif
+3. Envoie l'email via SMTP (Gmail)
+4. Enregistre l'alerte dans la table Alerte
+5. Lien vers le dashboard accessible depuis les emails d'alerte
 
 Configuration SMTP :
 
-python
+```python
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -162,21 +157,52 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tonemail@gmail.com'
 EMAIL_HOST_PASSWORD = 'motdepasse'
 DEFAULT_FROM_EMAIL = 'tonemail@gmail.com'
-Exemple d'email reçu :
+```
 
-text
-📋 RÉCAPITULATIF DES OFFRES IT
+---
 
-🔹 Référence : TEST-IT-002
-   Objet : Développement d'une application mobile...
-   Acheteur : Commune IZEMMOUREN
-   Date limite : 31/12/2026 14:00
-   Lieu : Casablanca
-   Budget : 250 000 MAD
-   Mots-clés : développement, application, digitalisation
+## Semaine 4 — Dashboard & Automatisation
 
-🔗 Consultez le dashboard pour plus d'informations.
+### Dashboard Streamlit
 
+Visualisation interactive des offres avec graphiques et filtres.
 
+```bash
+streamlit run dashboard_app.py
+```
 
+**Fonctionnalités :**
+Statistiques : total offres, offres IT, annulées, urgences, catégories, santé système
+Graphiques : offres par mois, top 10 régions, catégories, IT vs non-IT, tendance IT 7j, mots-clés les plus utilisés
+Filtres : secteur, région, catégorie, recherche, plage de dates
+Liste interactive des offres avec code couleur (vert IT, rouge annulé)
+Export Excel des offres filtrées
+Historique des exécutions du scraper intégré
 
+### Historique de scraping
+
+Chaque exécution du scraper enregistre un historique dans la table `HistoriqueScraping` : date, nombre d'offres trouvées, nombre d'offres IT, statut (Succès/Erreur). Visible dans `/admin/scraper/historiquescraping/`.
+
+### Automatisation (Task Scheduler)
+
+| Tâche | Heure | Fichier |
+|-------|-------|---------|
+| Scraper | 08:00 | `scraper/run_scraper.bat` |
+| Alertes | 09:00 | `scraper/run_alertes.bat` |
+
+```bash
+taskschd.msc  # Planificateur de tâches Windows
+```
+
+---
+
+### ✅ Résultats
+
+- Dashboard opérationnel
+- Graphiques interactifs
+- Filtres disponibles
+- Mots-clés dynamiques (modifiables via admin)
+- Catégorie extraite depuis le site
+- Historique de scraping automatique
+- Automatisation configurée
+- Projet prêt pour la production
