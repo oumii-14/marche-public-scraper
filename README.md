@@ -127,14 +127,6 @@ python scraper/scrape.py
 
 ## Semaine 3 — Module d'Analyse et Alerte
 
-### Mots-clés dynamiques
-
-Les mots-clés ne sont plus écrits en dur dans le code. Le decideur peut les ajouter/supprimer/modifier via `/admin/scraper/motcle/`. Le scraper lit automatiquement la liste mise à jour à chaque lancement via `get_mots_cles()`.
-
-### Catégorie extraite depuis la page de détail
-
-La catégorie (Travaux/Fournitures/Services) est lue directement depuis le champ `Catégorie principale` de la page de détail de chaque offre sur le site, plus de détection basée sur l'objet.
-
 ### 📧 Alertes emails
 
 Le script `scraper/alertes.py` vérifie quotidiennement les nouvelles offres IT et envoie un email récapitulatif au décideur.
@@ -162,7 +154,13 @@ DEFAULT_FROM_EMAIL = 'tonemail@gmail.com'
 ---
 
 ## Semaine 4 — Dashboard & Automatisation
+### Mots-clés dynamiques
 
+Les mots-clés ne sont plus écrits en dur dans le code. Le decideur peut les ajouter/supprimer/modifier via `/admin/scraper/motcle/`. Le scraper lit automatiquement la liste mise à jour à chaque lancement via `get_mots_cles()`.
+
+### Catégorie extraite depuis la page de détail
+
+La catégorie (Travaux/Fournitures/Services) est lue directement depuis le champ `Catégorie principale` de la page de détail de chaque offre sur le site, plus de détection basée sur l'objet.
 ### Dashboard Streamlit
 
 Visualisation interactive des offres avec graphiques et filtres.
