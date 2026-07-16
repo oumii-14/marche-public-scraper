@@ -173,7 +173,7 @@ streamlit run dashboard_app.py
 
 **Fonctionnalités :**
 Statistiques : total offres, offres IT, annulées, urgences, catégories, santé système
-Graphiques : offres par mois, top 10 régions, catégories, IT vs non-IT, tendance IT 7j, mots-clés les plus utilisés
+Graphiques : offres par mois, top 10 régions, catégories, IT vs non-IT, mots-clés les plus utilisés
 Filtres : secteur, région, catégorie, recherche, plage de dates
 Liste interactive des offres avec code couleur (vert IT, rouge annulé)
 Export Excel des offres filtrées
