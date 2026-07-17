@@ -296,6 +296,7 @@ def scraper_consultations():
     driver = webdriver.Chrome(service=service)
 
     total = 0
+    total_it = 0
     total_offres = 0
     page_num = 1
     erreur = None
@@ -324,6 +325,8 @@ def scraper_consultations():
                     
                     if enregistrer_offre(donnees, driver, url_detail):
                         total += 1
+                        if donnees.get('est_informatique'):
+                            total_it += 1
 
             # ============================================
             # PAGINATION ROBUSTE (4 méthodes)
@@ -389,20 +392,19 @@ def scraper_consultations():
         driver.quit()
 
     # Enregistrer l'historique du scraping
-    nb_it = Consultation.objects.filter(est_informatique=True).count()
     config = Configuration.objects.first()
     HistoriqueScraping.objects.create(
         nb_consultations=total_offres,
         nb_resultats=0,
-        nb_offres_it=nb_it,
+        nb_offres_it=total_it,
         statut=erreur or "Succès",
         configuration=config,
     )
 
     print("\n" + "=" * 60)
-    print(f"  TERMINÉ : {total} nouvelle(s) offre(s) ajoutée(s)")
+    print(f"  TERMINÉ : {total} nouvelle(s) offre(s) ajoutée(s) ({total_it} IT)")
     print(f"  Total en base : {Consultation.objects.count()} offres")
-    print(f"  Offres IT : {Consultation.objects.filter(est_informatique=True).count()}")
+    print(f"  Offres IT en base : {Consultation.objects.filter(est_informatique=True).count()}")
     print("=" * 60)
 
 

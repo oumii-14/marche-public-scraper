@@ -134,10 +134,10 @@ Le script `scraper/alertes.py` vérifie quotidiennement les nouvelles offres IT 
 Fonctionnement :
 
 1. Vérifie les offres IT sans alerte
-2. Construit un email récapitulatif
+2. Construit un email récapitulatif (tableau HTML)
 3. Envoie l'email via SMTP (Gmail)
 4. Enregistre l'alerte dans la table Alerte
-5. Lien vers le dashboard accessible depuis les emails d'alerte
+5. Lien direct vers le dashboard : `Consultez le dashboard : http://192.168.1.8:8501`
 
 Configuration SMTP :
 
@@ -165,17 +165,27 @@ La catégorie (Travaux/Fournitures/Services) est lue directement depuis le champ
 
 Visualisation interactive des offres avec graphiques et filtres.
 
+**Démarrage automatique au boot Windows :**
+
 ```bash
-streamlit run dashboard_app.py
+# Le dashboard démarre automatiquement au démarrage du PC
+# via : shell:startup\start_dashboard.bat
 ```
 
+**Accès :**
+
+| Appareil | URL |
+|----------|-----|
+| PC | `http://localhost:8501` |
+| Téléphone | `http://192.168.1.8:8501` |
+
 **Fonctionnalités :**
-Statistiques : total offres, offres IT, annulées, urgences, catégories, santé système
-Graphiques : offres par mois, top 10 régions, catégories, IT vs non-IT, mots-clés les plus utilisés
-Filtres : secteur, région, catégorie, recherche, plage de dates
-Liste interactive des offres avec code couleur (vert IT, rouge annulé)
-Export Excel des offres filtrées
-Historique des exécutions du scraper intégré
+- Statistiques : total offres, offres IT, annulées, urgences, catégories, santé système
+- Graphiques : offres par mois, top 10 régions, catégories, IT vs non-IT, mots-clés les plus utilisés
+- Filtres : secteur, région, catégorie, recherche, plage de dates
+- Liste interactive des offres avec code couleur (vert IT, rouge annulé)
+- Export Excel des offres filtrées
+- Historique des exécutions du scraper intégré
 
 ### Historique de scraping
 
@@ -195,11 +205,13 @@ taskschd.msc  # Planificateur de tâches Windows
 
 ### ✅ Résultats
 
-- Dashboard opérationnel
+- Dashboard opérationnel (auto-démarrage au boot)
+- Accès PC et téléphone via `http://192.168.1.8:8501`
 - Graphiques interactifs
 - Filtres disponibles
 - Mots-clés dynamiques (modifiables via admin)
 - Catégorie extraite depuis le site
 - Historique de scraping automatique
-- Automatisation configurée
+- Automatisation configurée (une seule tâche à 10h00)
+- Emails HTML avec lien direct vers le dashboard
 - Projet prêt pour la production
