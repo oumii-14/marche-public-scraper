@@ -23,17 +23,16 @@ if not st.session_state.authentifie:
     st.markdown("""
     <style>
     .stApp {background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);}
-    .login-wrap {display:flex;justify-content:center;align-items:center;min-height:88vh;}
-    .login-box {width:400px;padding:48px 40px;background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);text-align:center;}
-    .login-icon {font-size:52px;margin-bottom:16px;}
+    .login-box {max-width:400px;margin:0 auto;padding:40px;background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);text-align:center;}
+    .login-icon {font-size:52px;margin-bottom:12px;}
     .login-title {font-size:24px;font-weight:600;color:#fff;margin:0 0 6px 0;}
-    .login-sub {font-size:14px;color:#94a3b8;margin:0 0 32px 0;}
-    .login-ft {margin-top:28px;font-size:12px;color:#64748b;line-height:1.6;}
+    .login-sub {font-size:14px;color:#94a3b8;margin:0 0 28px 0;}
+    .login-ft {margin-top:24px;font-size:12px;color:#64748b;line-height:1.6;}
     .login-ft span {color:#94a3b8;}
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="login-wrap"><div class="login-box">', unsafe_allow_html=True)
+    st.markdown('<div class="login-box">', unsafe_allow_html=True)
     st.markdown('<div class="login-icon">&#128274;</div>', unsafe_allow_html=True)
     st.markdown('<div class="login-title">Dashboard Marches Publics</div>', unsafe_allow_html=True)
     st.markdown('<div class="login-sub">Connectez-vous pour acceder au tableau de bord</div>', unsafe_allow_html=True)
@@ -48,7 +47,7 @@ if not st.session_state.authentifie:
             st.error("Mot de passe incorrect.")
 
     st.markdown('''<div class="login-ft"><span>&#128274; Acces reserve aux decideurs</span><br>Contactez l'administrateur si necessaire</div>''', unsafe_allow_html=True)
-    st.markdown('</div></div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
 # ─── Auto-refresh ───
