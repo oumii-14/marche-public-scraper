@@ -23,12 +23,23 @@ if not st.session_state.authentifie:
     st.markdown("""
     <style>
     .stApp {background: #f5f7fa;}
+    .stTextInput > div > div > input {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+    .stTextInput > div > div > input:focus {
+        border-color: #f7941e;
+        box-shadow: 0 0 0 2px rgba(247,148,30,0.15);
+    }
     .stButton > button[kind="primary"] {
         background-color: #f7941e !important;
         color: #003366 !important;
         border: none !important;
         border-radius: 8px !important;
         font-weight: 700 !important;
+        padding: 8px 0 !important;
     }
     .stButton > button[kind="primary"]:hover {
         background-color: #e67e22 !important;
@@ -37,11 +48,10 @@ if not st.session_state.authentifie:
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("# :lock: Dashboard Marches Publics")
+    st.markdown("<h4 style='color:#003366;margin:0;'>:lock: Dashboard Marches Publics</h4>", unsafe_allow_html=True)
     st.caption("Connectez-vous pour acceder au tableau de bord")
-    st.markdown("---")
 
-    mot_passe = st.text_input("Mot de passe", type="password", placeholder="Entrez votre mot de passe")
+    mot_passe = st.text_input("", type="password", placeholder="Mot de passe", label_visibility="collapsed")
 
     if st.button("Se connecter", use_container_width=True, type="primary"):
         if mot_passe == MOT_DE_PASSE:
@@ -50,7 +60,6 @@ if not st.session_state.authentifie:
         else:
             st.error("Mot de passe incorrect.")
 
-    st.markdown("---")
     st.caption("Acces reserve aux decideurs")
     st.stop()
 
@@ -59,8 +68,25 @@ st_autorefresh(interval=300000, key="auto_refresh")
 
 # ─── Sidebar deconnexion ───
 with st.sidebar:
-    st.write("Connecte en tant que : **Decideur**")
-    if st.button("Se deconnecter"):
+    st.markdown("""
+    <style>
+    .sidebar-user {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: #fff5e6;
+        border-radius: 8px;
+        border-left: 3px solid #f7941e;
+        margin-bottom: 12px;
+        font-size: 13px;
+        color: #003366;
+    }
+    .sidebar-user span {font-weight: 600;}
+    </style>
+    """, unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-user">&#128100; <span>Decideur</span></div>', unsafe_allow_html=True)
+    if st.button("Deconnexion", use_container_width=True):
         st.session_state.authentifie = False
         st.rerun()
 
