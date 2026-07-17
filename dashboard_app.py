@@ -158,19 +158,6 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-label">Navigation</div>', unsafe_allow_html=True)
-
-    if st.button("📊 Dashboard", use_container_width=True):
-        st.session_state['scroll_to'] = 'stats'
-        st.rerun()
-    if st.button("📋 Historique", use_container_width=True):
-        st.session_state['scroll_to'] = 'historique'
-        st.rerun()
-    if st.button("📋 Liste offres", use_container_width=True):
-        st.session_state['scroll_to'] = 'offres'
-        st.rerun()
-
-    st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
     st.markdown('<div class="sidebar-label">Compte</div>', unsafe_allow_html=True)
 
     if st.button("🚪 Deconnexion", use_container_width=True):
@@ -448,8 +435,3 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ─── Scroll auto ───
-if 'scroll_to' in st.session_state:
-    target = st.session_state.pop('scroll_to')
-    import streamlit.components.v1 as components
-    components.html(f'<script>document.getElementById("{target}").scrollIntoView({{behavior:"smooth"}});</script>', height=0)
