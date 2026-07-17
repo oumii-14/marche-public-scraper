@@ -10,6 +10,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marche_public.settings')
 django.setup()
 
 from scraper.models import Consultation, HistoriqueScraping, Alerte
+from django.db import connection
 
 st.set_page_config(page_title="Marches Publics - Dashboard", layout="wide")
 
@@ -170,19 +171,33 @@ with st.sidebar:
     st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
     st.markdown('<div class="sidebar-label">Compte</div>', unsafe_allow_html=True)
 
-    if st.button("🚪 Deconnexion", use_container_width=True):
+    if st.button("Deconnexion", use_container_width=True):
         st.session_state.authentifie = False
         st.rerun()
 
 # ─── Charge data ───
 def charger_donnees():
     offres = Consultation.objects.select_related('acheteur', 'categorie').all()
+
+    mots_map = {}
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT scm.consultation_id, mk.mot
+                FROM scraper_consultation_mots_cles scm
+                JOIN scraper_motcle mk ON scm.motcle_id = mk.id
+            """)
+            for row in cursor.fetchall():
+                cid, mot = row
+                if cid not in mots_map:
+                    mots_map[cid] = []
+                mots_map[cid].append(mot)
+    except Exception:
+        pass
+
     data = []
     for offre in offres:
-        try:
-            mots = ', '.join(offre.mots_cles.values_list('mot', flat=True))
-        except Exception:
-            mots = ''
+        mots = ', '.join(mots_map.get(offre.id, []))
         data.append({
             'id': offre.id,
             'reference': offre.reference,
