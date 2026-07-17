@@ -39,9 +39,7 @@ Outil automatisé de surveillance des appels d'offres publiés sur `marchespubli
 
 ---
 
-## Semaine 2 — Développement du scraper 
-
-```
+## Semaine 2 — Développement du scraper
 
 ### 1. Fonctions principales
 
@@ -70,7 +68,7 @@ Le scraper est composé de **11 fonctions** qui travaillent ensemble pour automa
 
 4. GESTION DES DONNÉES
    get_ou_creer_organisme() → Gère les organismes acheteurs
-   enregistrer_offre() → 	Sauvegarde en base avec vérification des doublons
+   enregistrer_offre() → Sauvegarde en base avec vérification des doublons
 
 5. ORCHESTRATION
    scraper_consultations() → Fonction principale qui pilote tout
@@ -80,12 +78,14 @@ scraper_consultations() → Navigation → Extraction → Classification via pag
 
 ---
 
-   # remplissage des tables (TEST)
-Table        	Rôle              	Nombre	
-Consultation	Offres scrapées	    563	
-Organisme	   Acheteurs publics   	 545	
-Categorie    	Catégories	           3	(Service\Fournitures\travaux)
-MotCle	      Mots-clés IT           19	
+| Table         | Rôle                  | Nombre  |
+|---------------|-----------------------|---------|
+| Consultation  | Offres scrapées       | 563     |
+| Organisme     | Acheteurs publics     | 545     |
+| Categorie     | Catégories            | 3       |
+| MotCle        | Mots-clés IT          | 19      |
+
+---
 
 ## Démarrage rapide
 
@@ -96,7 +96,7 @@ cd marche-public-scraper
 
 # 2. Environnement virtuel
 python -m venv venv
-venv\Scripts\activate        
+venv\Scripts\activate
 
 # 3. Dépendances
 pip install -r requirements.txt
@@ -106,14 +106,13 @@ psql -U postgres -c "CREATE DATABASE marche_public;"
 python manage.py migrate
 
 # 5. Admin
-python manage.py createsuperuser   
-      admin / mdp: admin123
+python manage.py createsuperuser
+# admin / mdp: admin123
 
 # 6. Lancer le scraper
 python scraper/scrape.py
-
-
 ```
+
 ## Technologies
 
 | Technologie | Version | Rôle |
@@ -121,9 +120,12 @@ python scraper/scrape.py
 | Python | 3.12 | Langage principal |
 | Django | 6.0.6 | Framework web / ORM |
 | PostgreSQL | 17 | Base de données |
-| Selenium | 4.45.0 | Scraping navigateur | (POUR PLAWRIGHT J AVAIT UN PROB D INSTALLATION)
+| Selenium | 4.45.0 | Scraping navigateur |
 | ChromeDriver | — | Pilote Chrome |
+| Streamlit | — | Dashboard interactif |
+| streamlit-autorefresh | — | Auto-refresh du dashboard |
 
+---
 
 ## Semaine 3 — Module d'Analyse et Alerte
 
@@ -137,7 +139,7 @@ Fonctionnement :
 2. Construit un email récapitulatif (tableau HTML)
 3. Envoie l'email via SMTP (Gmail)
 4. Enregistre l'alerte dans la table Alerte
-5. Lien direct vers le dashboard : `Consultez le dashboard : http://192.168.1.8:8501`
+5. Lien direct vers le dashboard : `http://192.168.1.8:8501`
 
 Configuration SMTP :
 
@@ -154,16 +156,18 @@ DEFAULT_FROM_EMAIL = 'tonemail@gmail.com'
 ---
 
 ## Semaine 4 — Dashboard & Automatisation
+
 ### Mots-clés dynamiques
 
-Les mots-clés ne sont plus écrits en dur dans le code. Le decideur peut les ajouter/supprimer/modifier via `/admin/scraper/motcle/`. Le scraper lit automatiquement la liste mise à jour à chaque lancement via `get_mots_cles()`.
+Les mots-clés ne sont plus écrits en dur dans le code. Le décideur peut les ajouter/supprimer/modifier via `/admin/scraper/motcle/`. Le scraper lit automatiquement la liste mise à jour à chaque lancement via `get_mots_cles()`.
 
 ### Catégorie extraite depuis la page de détail
 
-La catégorie (Travaux/Fournitures/Services) est lue directement depuis le champ `Catégorie principale` de la page de détail de chaque offre sur le site, plus de détection basée sur l'objet.
+La catégorie (Travaux/Fournitures/Services) est lue directement depuis le champ `Catégorie principale` de la page de détail de chaque offre sur le site.
+
 ### Dashboard Streamlit
 
-Visualisation interactive des offres avec graphiques et filtres. **Temps réel** — se rafraîchit automatiquement toutes les 5 minutes après chaque scraping.
+Visualisation interactive des offres avec graphiques et filtres. **Temps réel** — se rafraîchit automatiquement toutes les 5 minutes.
 
 **Démarrage automatique au boot Windows :**
 
@@ -174,14 +178,47 @@ Visualisation interactive des offres avec graphiques et filtres. **Temps réel**
 
 **Accès :** `http://192.168.1.8:8501`
 
-**Fonctionnalités :**
-- Auto-refresh toutes les 5 minutes (temps réel après chaque scrape)
-- Statistiques : total offres, offres IT, annulées, urgences, catégories, santé système
-- Graphiques : offres par mois, top 10 régions, catégories, IT vs non-IT, mots-clés les plus utilisés
-- Filtres : secteur, région, catégorie, recherche, plage de dates
-- Liste interactive des offres avec code couleur (vert IT, rouge annulé)
-- Export Excel des offres filtrées
-- Historique des exécutions du scraper intégré
+### Authentification
+
+Le dashboard est protégé par un mot de passe. Le login s'affiche avec un style épuré inspiré du site marchespublics.gov.ma (bleu marine + orange).
+
+```python
+MOT_DE_PASSE = "marche2026"
+```
+
+### Navigation Sidebar
+
+Le dashboard propose **3 vues** navigables depuis la sidebar :
+
+| Vue | Description |
+|-----|-------------|
+| 📊 Dashboard | KPIs, alerte du jour, résumé rapide |
+| 📈 Graphiques | Offres par mois, régions, catégories, IT vs Non-IT, mots-clés, offres dépassées, top acheteurs |
+| 📋 Liste des offres | Tableau interactif avec badges (IT/Annulé), export Excel |
+
+Chaque vue a un bouton **⬅️ Retour au Dashboard** pour naviguer facilement.
+
+### Filtres complets (dans les 3 vues)
+
+| Filtre | Options |
+|--------|---------|
+| 🏢 Secteur | Tous / IT / Non-IT |
+| 📍 Région | Liste dynamique |
+| 🏷️ Catégorie | Liste dynamique |
+| 🔎 Recherche | Par référence, objet, acheteur |
+| 📅 Dates | Plage Du / Au |
+
+### SQL brut pour les mots-clés
+
+Le champ ManyToMany Django (`mots_cles`) contient un bug (`FieldDoesNotExist`). Les mots-clés sont chargés via une requête SQL brute contournant l'ORM :
+
+```python
+cursor.execute("""
+    SELECT scm.consultation_id, mk.mot
+    FROM scraper_consultation_mots_cles scm
+    JOIN scraper_motcle mk ON scm.motcle_id = mk.id
+""")
+```
 
 ### Historique de scraping
 
@@ -197,14 +234,27 @@ Chaque exécution du scraper enregistre un historique dans la table `HistoriqueS
 taskschd.msc  # Planificateur de tâches Windows
 ```
 
+### Démarrage manuel du dashboard
+
+```bash
+streamlit run dashboard_app.py --server.address 0.0.0.0 --server.port 8501
+```
+
+Ou via le script :
+
+```bash
+scraper/start_dashboard.bat
+```
+
 ---
 
 ### ✅ Résultats
 
-- Dashboard opérationnel (auto-démarrage au boot)
+- Dashboard opérationnel avec authentification (auto-démarrage au boot)
+- 3 vues navigables : Dashboard, Graphiques, Liste des offres
 - Accès via `http://192.168.1.8:8501` (PC et téléphone)
 - Graphiques interactifs
-- Filtres disponibles
+- Filtres complets dans toutes les vues
 - Mots-clés dynamiques (modifiables via admin)
 - Catégorie extraite depuis le site
 - Historique de scraping automatique
