@@ -53,14 +53,15 @@ if not st.session_state.authentifie:
     st.markdown("<h2 style='color:#003366;margin:0;'>Dashboard Marches Publics</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#666666;margin-top:6px;font-size:16px;'>Connectez-vous pour acceder au tableau de bord</p>", unsafe_allow_html=True)
 
-    mot_passe = st.text_input("", type="password", placeholder="Entrez votre mot de passe", label_visibility="collapsed")
-
-    if st.button("Se connecter", use_container_width=True, type="primary"):
-        if mot_passe == MOT_DE_PASSE:
-            st.session_state.authentifie = True
-            st.rerun()
-        else:
-            st.error("Mot de passe incorrect.")
+    with st.form("login_form"):
+        mot_passe = st.text_input("", type="password", placeholder="Entrez votre mot de passe", label_visibility="collapsed")
+        submitted = st.form_submit_button("Se connecter", use_container_width=True, type="primary")
+        if submitted:
+            if mot_passe == MOT_DE_PASSE:
+                st.session_state.authentifie = True
+                st.rerun()
+            else:
+                st.error("Mot de passe incorrect.")
 
     st.markdown("<p style='color:#999999;font-size:14px;margin-top:20px;'>Acces reserve aux decideurs</p>", unsafe_allow_html=True)
     st.stop()
