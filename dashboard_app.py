@@ -90,7 +90,7 @@ st.markdown(f"""
             <span style="color:#ffffff;font-size:22px;font-weight:700;">🇲🇦 MARCHES PUBLICS MAROC</span>
             <span style="color:#f7941e;font-size:18px;font-weight:600;margin-left:12px;">Tableau de bord</span>
             <div style="height:3px;background:#f7941e;width:80px;margin:6px 0;border-radius:2px;"></div>
-            <span style="color:#99c2ff;font-size:13px;">Plateforme de veille automatisee des appels d'offres IT</span>
+            <span style="color:#99c2ff;font-size:13px;">Ne ratez plus aucune opportunite IT</span>
         </div>
         <div style="text-align:right;">
             <span style="color:#ffffff;font-size:13px;">👤 Decideur</span><br>
