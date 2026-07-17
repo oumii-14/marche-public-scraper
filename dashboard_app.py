@@ -336,9 +336,18 @@ if not df_filtre.empty:
     maintenant = pd.Timestamp.now(tz='UTC')
     u = df_filtre[df_filtre['date_limite'].notna() & (df_filtre['date_limite'] < maintenant)]
     if not u.empty:
-        st.markdown('<div class="section-title">Offres depassees</div>', unsafe_allow_html=True)
-        urg_par_jour = u.groupby(u['date_limite'].dt.date).size()
-        st.line_chart(urg_par_jour)
+        st.markdown('<div class="section-title">⏰ Offres depassees</div>', unsafe_allow_html=True)
+
+        u_par_jour = u.groupby(u['date_limite'].dt.date).size().reset_index(name='nombre')
+        u_par_jour.columns = ['Date', 'Nombre']
+        u_par_jour = u_par_jour.sort_values('Date', ascending=False).head(15)
+
+        st.bar_chart(u_par_jour.set_index('Date'), use_container_width=True, height=300)
+
+        col_u1, col_u2, col_u3 = st.columns(3)
+        col_u1.metric("Total depassees", len(u))
+        col_u2.metric("IT depassees", u[u['est_informatique']==True].shape[0])
+        col_u3.metric("Derniere depassee", u['date_limite'].max().strftime('%d/%m/%Y') if not u.empty else "N/A")
 
 # ─── Tableau ───
 st.markdown('<div class="section-title">Liste des offres</div>', unsafe_allow_html=True)
