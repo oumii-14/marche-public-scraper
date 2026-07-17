@@ -348,6 +348,7 @@ if not df_filtre.empty:
         col_u1.metric("Total depassees", len(u))
         col_u2.metric("IT depassees", u[u['est_informatique']==True].shape[0])
         col_u3.metric("Derniere depassee", u['date_limite'].max().strftime('%d/%m/%Y') if not u.empty else "N/A")
+        st.caption(f"Mise a jour : {datetime.now().strftime('%d/%m/%Y %H:%M:%S')} | Auto-refresh 5 min")
 
 # ─── Tableau ───
 st.markdown('<div class="section-title">Liste des offres</div>', unsafe_allow_html=True)
