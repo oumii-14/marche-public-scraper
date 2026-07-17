@@ -107,20 +107,68 @@ with st.sidebar:
     .sidebar-user {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        background: #fff5e6;
-        border-radius: 8px;
-        border-left: 3px solid #f7941e;
-        margin-bottom: 12px;
-        font-size: 13px;
-        color: #003366;
+        gap: 10px;
+        padding: 12px 14px;
+        background: linear-gradient(135deg, #003366, #002244);
+        border-radius: 10px;
+        margin-bottom: 16px;
+        color: white;
     }
-    .sidebar-user span {font-weight: 600;}
+    .sidebar-user .user-icon {
+        font-size: 28px;
+    }
+    .sidebar-user .user-info {
+        flex: 1;
+    }
+    .sidebar-user .user-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: white;
+        margin: 0;
+    }
+    .sidebar-user .user-role {
+        font-size: 11px;
+        color: #99c2ff;
+        margin: 0;
+    }
+    .sidebar-divider {
+        height: 1px;
+        background: #e9ecef;
+        margin: 12px 0;
+    }
+    .sidebar-label {
+        font-size: 11px;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
     </style>
     """, unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-user">&#128100; <span>Decideur</span></div>', unsafe_allow_html=True)
-    if st.button("Deconnexion", use_container_width=True):
+
+    st.markdown("""
+    <div class="sidebar-user">
+        <span class="user-icon">👤</span>
+        <div class="user-info">
+            <p class="user-name">Decideur</p>
+            <p class="user-role">Connecte</p>
+        </div>
+        <span style="color:#28a745;font-size:10px;">●</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-label">Navigation</div>', unsafe_allow_html=True)
+
+    if st.button("📊 Dashboard", use_container_width=True):
+        pass
+    if st.button("📋 Historique", use_container_width=True):
+        pass
+
+    st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-label">Compte</div>', unsafe_allow_html=True)
+
+    if st.button("🚪 Deconnexion", use_container_width=True):
         st.session_state.authentifie = False
         st.rerun()
 
