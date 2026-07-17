@@ -129,6 +129,10 @@ def charger_donnees():
     offres = Consultation.objects.select_related('acheteur', 'categorie').all()
     data = []
     for offre in offres:
+        try:
+            mots = ', '.join(offre.mots_cles.values_list('mot', flat=True))
+        except Exception:
+            mots = ''
         data.append({
             'id': offre.id,
             'reference': offre.reference,
@@ -141,7 +145,7 @@ def charger_donnees():
             'est_annule': offre.est_annule,
             'categorie': offre.categorie.nom if offre.categorie else '',
             'date_publication': offre.date_publication,
-            'mots_cles': ', '.join(offre.mots_cles.values_list('mot', flat=True))
+            'mots_cles': mots
         })
     return pd.DataFrame(data)
 
