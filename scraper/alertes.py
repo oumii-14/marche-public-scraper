@@ -87,7 +87,7 @@ def envoyer_alertes():
         </table>
 
         <p style="color: #7f8c8d; font-size: 12px;">
-            Consultez le dashboard : <a href="http://localhost:8501" style="color: #3498db;">http://localhost:8501</a>
+            Consultez le dashboard : <a href="http://192.168.1.8:8501" style="color: #3498db;">http://192.168.1.8:8501</a>
         </p>
         <hr style="border: none; border-top: 1px solid #eee;">
         <p style="color: #95a5a6; font-size: 11px;">

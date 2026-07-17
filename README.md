@@ -172,7 +172,7 @@ Visualisation interactive des offres avec graphiques et filtres.
 # via : shell:startup\start_dashboard.bat
 ```
 
-**Accès :** `http://localhost:8501`
+**Accès :** `http://192.168.1.8:8501`
 
 **Fonctionnalités :**
 - Statistiques : total offres, offres IT, annulées, urgences, catégories, santé système
@@ -201,7 +201,7 @@ taskschd.msc  # Planificateur de tâches Windows
 ### ✅ Résultats
 
 - Dashboard opérationnel (auto-démarrage au boot)
-- Accès via `http://localhost:8501` (PC et téléphone)
+- Accès via `http://192.168.1.8:8501` (PC et téléphone)
 - Graphiques interactifs
 - Filtres disponibles
 - Mots-clés dynamiques (modifiables via admin)
