@@ -83,17 +83,18 @@ if not st.session_state.authentifie:
 st_autorefresh(interval=300000, key="auto_refresh")
 
 # ─── Header ───
-st.markdown("""
+st.markdown(f"""
 <div style="background:linear-gradient(135deg,#003366,#002244);padding:20px 28px;border-radius:0 0 12px 12px;margin:-10px -10px 20px -10px;">
     <div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
-            <span style="color:#ffffff;font-size:22px;font-weight:700;">MARCHES PUBLICS MAROC</span>
+            <span style="color:#ffffff;font-size:22px;font-weight:700;">🇲🇦 MARCHES PUBLICS MAROC</span>
             <span style="color:#f7941e;font-size:18px;font-weight:600;margin-left:12px;">Tableau de bord</span>
-            <br><span style="color:#99c2ff;font-size:13px;">Plateforme de veille automatisee des appels d'offres IT</span>
+            <div style="height:3px;background:#f7941e;width:80px;margin:6px 0;border-radius:2px;"></div>
+            <span style="color:#99c2ff;font-size:13px;">Plateforme de veille automatisee des appels d'offres IT</span>
         </div>
         <div style="text-align:right;">
             <span style="color:#ffffff;font-size:13px;">👤 Decideur</span><br>
-            <a href="#" style="color:#f7941e;font-size:12px;text-decoration:none;" id="logout-link">Deconnexion</a>
+            <span style="color:#99c2ff;font-size:11px;">📅 {datetime.now().strftime('%d/%m/%Y %H:%M')}</span>
         </div>
     </div>
 </div>
@@ -165,32 +166,29 @@ with kpi1:
     st.markdown(f"""
     <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #003366;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div><span style="color:#666;font-size:13px;">Total offres</span><br>
+            <div><span style="color:#666;font-size:13px;">📄 Total offres</span><br>
             <span style="color:#003366;font-size:28px;font-weight:700;">{total}</span></div>
-            <span style="font-size:28px;">📄</span>
         </div>
-        <span style="color:#28a745;font-size:12px;">+{total_hier} vs hier</span>
+        <span style="color:#28a745;font-size:12px;">🟢 +{total_hier} vs hier</span>
     </div>""", unsafe_allow_html=True)
 
 with kpi2:
     st.markdown(f"""
     <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #28a745;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div><span style="color:#666;font-size:13px;">Offres IT</span><br>
+            <div><span style="color:#666;font-size:13px;">💻 Offres IT</span><br>
             <span style="color:#003366;font-size:28px;font-weight:700;">{it}</span>
             <span style="color:#28a745;font-size:13px;margin-left:6px;">({it_pct}%)</span></div>
-            <span style="font-size:28px;">💻</span>
         </div>
-        <span style="color:#28a745;font-size:12px;">+{it_hier} vs hier</span>
+        <span style="color:#28a745;font-size:12px;">🟢 +{it_hier} vs hier</span>
     </div>""", unsafe_allow_html=True)
 
 with kpi3:
     st.markdown(f"""
     <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #dc3545;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div><span style="color:#666;font-size:13px;">Annulees</span><br>
+            <div><span style="color:#666;font-size:13px;">❌ Annulees</span><br>
             <span style="color:#003366;font-size:28px;font-weight:700;">{annulees}</span></div>
-            <span style="font-size:28px;">❌</span>
         </div>
     </div>""", unsafe_allow_html=True)
 
@@ -198,11 +196,10 @@ with kpi4:
     st.markdown(f"""
     <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #f7941e;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div><span style="color:#666;font-size:13px;">Urgentes</span><br>
+            <div><span style="color:#666;font-size:13px;">⏰ Urgentes</span><br>
             <span style="color:#003366;font-size:28px;font-weight:700;">{urgentes}</span></div>
-            <span style="font-size:28px;">⏰</span>
         </div>
-        <span style="color:#f7941e;font-size:12px;">{round(urgentes/total*100) if total else 0}% des offres</span>
+        <span style="color:#f7941e;font-size:12px;">🟠 {round(urgentes/total*100) if total else 0}% des offres</span>
     </div>""", unsafe_allow_html=True)
 
 # ─── Banner alerte ───
@@ -220,21 +217,21 @@ if not ajd.empty:
     </div>""", unsafe_allow_html=True)
 
 # ─── Filtres ───
-st.markdown('<div class="section-title">Filtres</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">🔍 Filtres</div>', unsafe_allow_html=True)
 
 col_f1, col_f2, col_f3 = st.columns(3)
 with col_f1:
-    filtre_it = st.selectbox("Secteur", ["Tous", "IT", "Non-IT"])
+    filtre_it = st.selectbox("🏢 Secteur", ["Tous", "IT", "Non-IT"])
 with col_f2:
     regions = ["Toutes"] + sorted(df['lieu'].unique().tolist())
-    filtre_region = st.selectbox("Region", regions)
+    filtre_region = st.selectbox("📍 Region", regions)
 with col_f3:
     categories = ["Toutes"] + sorted(df['categorie'].unique().tolist())
-    filtre_categorie = st.selectbox("Categorie", categories)
+    filtre_categorie = st.selectbox("🏷️ Categorie", categories)
 
 col_f4, col_f5, col_f6 = st.columns([2, 1, 1])
 with col_f4:
-    recherche = st.text_input("", placeholder="Rechercher par reference, objet, acheteur...", label_visibility="collapsed")
+    recherche = st.text_input("", placeholder="🔎 Rechercher par reference, objet, acheteur...", label_visibility="collapsed")
 with col_f5:
     date_min = df['date_limite'].min().date() if pd.notna(df['date_limite'].min()) else date.today()
     date_max = df['date_limite'].max().date() if pd.notna(df['date_limite'].max()) else date.today()
@@ -351,24 +348,26 @@ if not df_filtre.empty:
         st.caption(f"Mise a jour : {datetime.now().strftime('%d/%m/%Y %H:%M:%S')} | Auto-refresh 5 min")
 
 # ─── Tableau ───
-st.markdown('<div class="section-title">Liste des offres</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">📋 Liste des offres</div>', unsafe_allow_html=True)
 cols_aff = ['id', 'reference', 'objet', 'acheteur', 'lieu', 'date_limite', 'budget', 'est_informatique', 'est_annule', 'categorie', 'mots_cles']
 df_aff = df_filtre[cols_aff].copy()
 df_aff.columns = ['ID', 'Reference', 'Objet', 'Acheteur', 'Lieu', 'Date limite', 'Budget', 'IT', 'Annule', 'Categorie', 'Mots-cles']
 
 def color_row(row):
-    if row['Annule'] == True:
+    if row['Annule'] == ' Oui':
         return ['background-color: #fce4ec'] * len(row)
-    elif row['IT'] == True:
+    elif row['IT'] == ' IT':
         return ['background-color: #e8f5e9'] * len(row)
     return [''] * len(row)
 
 df_aff_val = df_aff.copy()
-df_aff_val['IT'] = df_aff_val['IT'].map({True: ' IT', False: ' '})
-df_aff_val['Annule'] = df_aff_val['Annule'].map({True: ' Oui', False: ' Non'})
+df_aff_val['IT'] = df_aff_val['IT'].map({True: '🟢 IT', False: ''})
+df_aff_val['Annule'] = df_aff_val['Annule'].map({True: '🔴 Annule', False: ''})
 df_aff_val['Date limite'] = df_aff_val['Date limite'].dt.strftime('%d/%m/%Y %H:%M')
 
 st.dataframe(df_aff_val.style.apply(color_row, axis=1), use_container_width=True, height=500)
+
+st.markdown(f"<p style='color:#666;font-size:13px;'>📊 {len(df_filtre)} resultat(s)</p>", unsafe_allow_html=True)
 
 # Export
 try:
