@@ -47,7 +47,7 @@ with st.expander("🗼 Système", expanded=False):
         cols[0].warning("Aucun scraping effectué")
     alertes_ajd = Alerte.objects.filter(date_envoi__date=date.today()).count()
     cols[1].success(f"Email opérationnel ({alertes_ajd} alertes aujourd'hui)")
-    proch = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
+    proch = datetime.now().replace(hour=10, minute=0, second=0, microsecond=0)
     if datetime.now() >= proch:
         proch += timedelta(days=1)
     cols[2].warning(f"Prochaine exécution: {proch.strftime('%d/%m/%Y %H:%M')}")

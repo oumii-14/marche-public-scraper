@@ -185,8 +185,7 @@ Chaque exécution du scraper enregistre un historique dans la table `HistoriqueS
 
 | Tâche | Heure | Fichier |
 |-------|-------|---------|
-| Scraper | 08:00 | `scraper/run_scraper.bat` |
-| Alertes | 09:00 | `scraper/run_alertes.bat` |
+| Scraper + Alertes | 10:00 | `scraper/run_all.bat` |
 
 ```bash
 taskschd.msc  # Planificateur de tâches Windows
