@@ -15,6 +15,24 @@ st.set_page_config(page_title="Marches Publics - Dashboard", layout="wide")
 
 MOT_DE_PASSE = "marche2026"
 
+st.markdown("""
+<style>
+.stButton > button[kind="primary"] {
+    background-color: #f7941e !important;
+    color: #003366 !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    font-size: 16px !important;
+    padding: 12px 0 !important;
+}
+.stButton > button[kind="primary"]:hover {
+    background-color: #e67e22 !important;
+    color: white !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ─── Auth ───
 if "authentifie" not in st.session_state:
     st.session_state.authentifie = False
@@ -34,34 +52,20 @@ if not st.session_state.authentifie:
         border-color: #f7941e;
         box-shadow: 0 0 0 3px rgba(247,148,30,0.2);
     }
-    .stButton > button[kind="primary"] {
-        background-color: #f7941e !important;
-        color: #003366 !important;
-        border: none !important;
-        border-radius: 10px !important;
-        font-weight: 700 !important;
-        font-size: 19px !important;
-        padding: 16px 0 !important;
-    }
-    .stButton > button[kind="primary"]:hover {
-        background-color: #e67e22 !important;
-        color: white !important;
-    }
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown("<h2 style='color:#003366;margin:0;'>Dashboard Marches Publics</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color:#666666;margin-top:6px;font-size:16px;'>Connectez-vous pour acceder au tableau de bord</p>", unsafe_allow_html=True)
 
-    with st.form("login_form"):
-        mot_passe = st.text_input("", type="password", placeholder="Entrez votre mot de passe", label_visibility="collapsed")
-        submitted = st.form_submit_button("Se connecter", use_container_width=True, type="primary")
-        if submitted:
-            if mot_passe == MOT_DE_PASSE:
-                st.session_state.authentifie = True
-                st.rerun()
-            else:
-                st.error("Mot de passe incorrect.")
+    mot_passe = st.text_input("", type="password", placeholder="Entrez votre mot de passe", label_visibility="collapsed")
+
+    if st.button("Se connecter", use_container_width=True, type="primary", key="btn_login"):
+        if mot_passe == MOT_DE_PASSE:
+            st.session_state.authentifie = True
+            st.rerun()
+        else:
+            st.error("Mot de passe incorrect.")
 
     st.markdown("<p style='color:#999999;font-size:14px;margin-top:20px;'>Acces reserve aux decideurs</p>", unsafe_allow_html=True)
     st.stop()
