@@ -163,7 +163,7 @@ Les mots-clés ne sont plus écrits en dur dans le code. Le decideur peut les aj
 La catégorie (Travaux/Fournitures/Services) est lue directement depuis le champ `Catégorie principale` de la page de détail de chaque offre sur le site, plus de détection basée sur l'objet.
 ### Dashboard Streamlit
 
-Visualisation interactive des offres avec graphiques et filtres.
+Visualisation interactive des offres avec graphiques et filtres. **Temps réel** — se rafraîchit automatiquement toutes les 5 minutes après chaque scraping.
 
 **Démarrage automatique au boot Windows :**
 
@@ -175,6 +175,7 @@ Visualisation interactive des offres avec graphiques et filtres.
 **Accès :** `http://192.168.1.8:8501`
 
 **Fonctionnalités :**
+- Auto-refresh toutes les 5 minutes (temps réel après chaque scrape)
 - Statistiques : total offres, offres IT, annulées, urgences, catégories, santé système
 - Graphiques : offres par mois, top 10 régions, catégories, IT vs non-IT, mots-clés les plus utilisés
 - Filtres : secteur, région, catégorie, recherche, plage de dates
