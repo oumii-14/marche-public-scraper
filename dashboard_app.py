@@ -23,12 +23,12 @@ if not st.session_state.authentifie:
     st.markdown("""
     <style>
     .stApp {background: #f5f7fa;}
-    h3 {margin-top: 0 !important;}
+    h2 {margin-top: 0 !important;}
     .stTextInput > div > div > input {
         border: 2px solid #e9ecef;
         border-radius: 10px;
-        padding: 14px 18px;
-        font-size: 16px;
+        padding: 18px 22px;
+        font-size: 18px;
     }
     .stTextInput > div > div > input:focus {
         border-color: #f7941e;
@@ -40,8 +40,8 @@ if not st.session_state.authentifie:
         border: none !important;
         border-radius: 10px !important;
         font-weight: 700 !important;
-        font-size: 17px !important;
-        padding: 14px 0 !important;
+        font-size: 19px !important;
+        padding: 16px 0 !important;
     }
     .stButton > button[kind="primary"]:hover {
         background-color: #e67e22 !important;
@@ -50,8 +50,8 @@ if not st.session_state.authentifie:
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h3 style='color:#003366;margin:0;'>Dashboard Marches Publics</h3>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#666666;margin-top:4px;'>Connectez-vous pour acceder au tableau de bord</p>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#003366;margin:0;'>Dashboard Marches Publics</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#666666;margin-top:6px;font-size:16px;'>Connectez-vous pour acceder au tableau de bord</p>", unsafe_allow_html=True)
 
     mot_passe = st.text_input("", type="password", placeholder="Entrez votre mot de passe", label_visibility="collapsed")
 
@@ -62,7 +62,7 @@ if not st.session_state.authentifie:
         else:
             st.error("Mot de passe incorrect.")
 
-    st.markdown("<p style='color:#999999;font-size:13px;margin-top:16px;'>Acces reserve aux decideurs</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#999999;font-size:14px;margin-top:20px;'>Acces reserve aux decideurs</p>", unsafe_allow_html=True)
     st.stop()
 
 # ─── Auto-refresh ───
