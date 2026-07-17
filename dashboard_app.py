@@ -3,6 +3,7 @@ Module de Visualisation - Dashboard Streamlit amélioré
 """
 import os, sys, django, pandas as pd, streamlit as st
 from datetime import datetime, date, timedelta
+from streamlit_autorefresh import st_autorefresh
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marche_public.settings')
@@ -13,8 +14,9 @@ from scraper.models import Consultation, HistoriqueScraping, Alerte
 st.set_page_config(page_title="Marchés Publics - Dashboard", layout="wide")
 st.title("- Tableau de bord - Veille des marchés publics")
 
-# ─── Cache data ───
-@st.cache_data
+st_autorefresh(interval=300000, key="auto_refresh")
+
+# ─── Charge data ───
 def charger_donnees():
     offres = Consultation.objects.select_related('acheteur', 'categorie').all()
     data = []
@@ -230,4 +232,4 @@ except ImportError:
     csv = df_filtre.to_csv(index=False, sep=';', encoding='utf-8-sig')
     st.download_button(label=" Télécharger (CSV)", data=csv.encode('utf-8-sig'), file_name='offres_marches_publics.csv', mime='text/csv', use_container_width=True)
 
-st.caption(f"Dernière mise à jour : {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+st.caption(f"Auto-refresh toutes les 5 min | Dernière mise à jour : {datetime.now().strftime('%d/%m/%Y %H:%M')}")
