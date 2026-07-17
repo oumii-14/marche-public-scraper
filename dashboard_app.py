@@ -22,13 +22,20 @@ if "authentifie" not in st.session_state:
 if not st.session_state.authentifie:
     st.markdown("""
     <style>
-    .stApp {background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);}
-    .login-box {max-width:400px;margin:0 auto;padding:40px;background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);text-align:center;}
-    .login-icon {font-size:52px;margin-bottom:12px;}
-    .login-title {font-size:24px;font-weight:600;color:#fff;margin:0 0 6px 0;}
-    .login-sub {font-size:14px;color:#94a3b8;margin:0 0 28px 0;}
-    .login-ft {margin-top:24px;font-size:12px;color:#64748b;line-height:1.6;}
-    .login-ft span {color:#94a3b8;}
+    .stApp {background: #f8f8f8;}
+    .login-box {
+        max-width: 420px;
+        margin: 40px auto 0 auto;
+        padding: 40px;
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .login-icon {font-size: 48px; margin-bottom: 16px;}
+    .login-title {font-size: 22px; font-weight: 700; color: #0f64b5; margin: 0 0 6px 0;}
+    .login-sub {font-size: 14px; color: rgba(71,78,84,0.8); margin: 0 0 28px 0;}
+    .login-ft {margin-top: 24px; font-size: 12px; color: rgba(71,78,84,0.6);}
     </style>
     """, unsafe_allow_html=True)
 
@@ -46,7 +53,7 @@ if not st.session_state.authentifie:
         else:
             st.error("Mot de passe incorrect.")
 
-    st.markdown('''<div class="login-ft"><span>&#128274; Acces reserve aux decideurs</span><br>Contactez l'administrateur si necessaire</div>''', unsafe_allow_html=True)
+    st.markdown('<div class="login-ft">Acces reserve aux decideurs</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
