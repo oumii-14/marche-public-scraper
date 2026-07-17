@@ -17,31 +17,100 @@ MOT_DE_PASSE = "marche2026"
 
 st.markdown("""
 <style>
-.stMain {background-color: #f5f7fa;}
-.login-box {
-    max-width: 420px;
-    margin: 60px auto;
+.stApp {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    min-height: 100vh;
+}
+.login-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+}
+.login-card {
+    width: 400px;
     padding: 48px 40px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     text-align: center;
 }
-.login-box h1 {
-    font-size: 22px;
-    color: #1e293b;
-    margin-bottom: 4px;
+.login-icon {
+    font-size: 52px;
+    margin-bottom: 16px;
 }
-.login-box p {
-    color: #64748b;
+.login-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+}
+.login-subtitle {
     font-size: 14px;
-    margin-bottom: 24px;
+    color: #94a3b8;
+    margin: 0 0 32px 0;
+}
+.login-card input[type="password"],
+.login-card input[type="text"] {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.login-card input:focus {
+    border-color: #06b6d4;
+}
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 0 !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    transition: opacity 0.2s !important;
+}
+.stButton > button[kind="primary"]:hover {
+    opacity: 0.85 !important;
 }
 .login-footer {
-    margin-top: 20px;
+    margin-top: 28px;
     font-size: 12px;
+    color: #64748b;
+    line-height: 1.6;
+}
+.login-footer span {
     color: #94a3b8;
+}
+.bg-circle1 {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    background: rgba(6, 182, 212, 0.08);
+    border-radius: 50%;
+    top: -80px;
+    right: -60px;
+    z-index: 0;
+}
+.bg-circle2 {
+    position: fixed;
+    width: 250px;
+    height: 250px;
+    background: rgba(59, 130, 246, 0.06);
+    border-radius: 50%;
+    bottom: -60px;
+    left: -40px;
+    z-index: 0;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -51,21 +120,26 @@ def verifier_mot_de_passe():
         st.session_state.authentifie = False
 
     if not st.session_state.authentifie:
-        st.markdown('<div class="login-box">', unsafe_allow_html=True)
-        st.markdown('<h1>Dashboard Marches Publics</h1>', unsafe_allow_html=True)
-        st.markdown('<p>Connectez-vous pour acceder au tableau de bord</p>', unsafe_allow_html=True)
+        st.markdown('<div class="bg-circle1"></div><div class="bg-circle2"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-center"><div class="login-card">', unsafe_allow_html=True)
+        st.markdown('<div class="login-icon">&#128274;</div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-title">Dashboard Marches Publics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-subtitle">Connectez-vous pour acceder au tableau de bord</div>', unsafe_allow_html=True)
 
-        mot_passe = st.text_input("", type="password", placeholder="Mot de passe", label_visibility="collapsed")
+        mot_passe = st.text_input("", type="password", placeholder="Entrez votre mot de passe", label_visibility="collapsed")
 
-        if st.button("Connexion", use_container_width=True, type="primary"):
+        if st.button("Se connecter", use_container_width=True, type="primary", key="btn_login"):
             if mot_passe == MOT_DE_PASSE:
                 st.session_state.authentifie = True
                 st.rerun()
             else:
                 st.error("Mot de passe incorrect.")
 
-        st.markdown('<div class="login-footer">Acces reserve aux decideurs</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('''<div class="login-footer">
+            <span>&#128274; Acces reserve aux decideurs</span><br>
+            Contactez l'administrateur si necessaire
+        </div>''', unsafe_allow_html=True)
+        st.markdown('</div></div>', unsafe_allow_html=True)
         st.stop()
 
 if verifier_mot_de_passe() is False:
