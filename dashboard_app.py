@@ -161,9 +161,11 @@ with st.sidebar:
     st.markdown('<div class="sidebar-label">Navigation</div>', unsafe_allow_html=True)
 
     if st.button("📊 Dashboard", use_container_width=True):
-        pass
+        st.markdown('<script>document.getElementById("stats").scrollIntoView({behavior:"smooth"});</script>', unsafe_allow_html=True)
     if st.button("📋 Historique", use_container_width=True):
-        pass
+        st.markdown('<script>document.getElementById("historique").scrollIntoView({behavior:"smooth"});</script>', unsafe_allow_html=True)
+    if st.button("📋 Liste offres", use_container_width=True):
+        st.markdown('<script>document.getElementById("offres").scrollIntoView({behavior:"smooth"});</script>', unsafe_allow_html=True)
 
     st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
     st.markdown('<div class="sidebar-label">Compte</div>', unsafe_allow_html=True)
@@ -210,7 +212,7 @@ hier = df[df['date_publication'].dt.date == (datetime.now() - timedelta(1)).date
 total_hier = len(hier)
 it_hier = hier[hier['est_informatique'] == True].shape[0] if not hier.empty else 0
 
-st.markdown('<div class="section-title">Statistiques generales</div>', unsafe_allow_html=True)
+st.markdown('<div id="stats" class="section-title">Statistiques generales</div>', unsafe_allow_html=True)
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
@@ -362,7 +364,7 @@ else:
 # ─── Historique + acheteurs ───
 col_h1, col_h2 = st.columns(2)
 with col_h1:
-    st.markdown('<div class="section-title">Historique des scrapings</div>', unsafe_allow_html=True)
+    st.markdown('<div id="historique" class="section-title">Historique des scrapings</div>', unsafe_allow_html=True)
     historique = HistoriqueScraping.objects.all().order_by('-date_scraping')[:10]
     if historique:
         h_data = []
@@ -400,7 +402,7 @@ if not df_filtre.empty:
         st.caption(f"Mise a jour : {datetime.now().strftime('%d/%m/%Y %H:%M:%S')} | Auto-refresh 5 min")
 
 # ─── Tableau ───
-st.markdown('<div class="section-title">📋 Liste des offres</div>', unsafe_allow_html=True)
+st.markdown('<div id="offres" class="section-title">📋 Liste des offres</div>', unsafe_allow_html=True)
 cols_aff = ['id', 'reference', 'objet', 'acheteur', 'lieu', 'date_limite', 'budget', 'est_informatique', 'est_annule', 'categorie', 'mots_cles']
 df_aff = df_filtre[cols_aff].copy()
 df_aff.columns = ['ID', 'Reference', 'Objet', 'Acheteur', 'Lieu', 'Date limite', 'Budget', 'IT', 'Annule', 'Categorie', 'Mots-cles']
