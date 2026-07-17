@@ -226,9 +226,14 @@ vue = st.session_state.get('vue', 'dashboard')
 # ═══════════════════════════════════════════════════════════════
 if vue == 'offres':
     st.markdown("""
-    <div style="background:linear-gradient(135deg,#003366,#002244);padding:20px 28px;border-radius:12px;margin-bottom:20px;">
-        <h2 style="color:white;margin:0;">📋 Liste des offres</h2>
-        <p style="color:#99c2ff;margin:4px 0 0 0;font-size:13px;">{total} offres au total</p>
+    <div style="background:linear-gradient(135deg,#003366 0%,#001a33 100%);padding:14px 22px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+            <h2 style="color:white;margin:0;font-size:18px;font-weight:700;">📋 Liste des offres</h2>
+            <p style="color:#7fb3e0;margin:2px 0 0 0;font-size:12px;">Consultation et recherche avancee</p>
+        </div>
+        <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:6px 14px;">
+            <span style="color:#f7941e;font-size:12px;font-weight:600;">📊 {total} offres</span>
+        </div>
     </div>
     """.format(total=len(df)), unsafe_allow_html=True)
 
@@ -304,11 +309,16 @@ if vue == 'offres':
 # ═══════════════════════════════════════════════════════════════
 elif vue == 'graphes':
     st.markdown("""
-    <div style="background:linear-gradient(135deg,#003366,#002244);padding:20px 28px;border-radius:12px;margin-bottom:20px;">
-        <h2 style="color:white;margin:0;">📈 Graphiques et Statistiques</h2>
-        <p style="color:#99c2ff;margin:4px 0 0 0;font-size:13px;">Analyse visuelle des marchés publics</p>
+    <div style="background:linear-gradient(135deg,#003366 0%,#001a33 100%);padding:14px 22px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+            <h2 style="color:white;margin:0;font-size:18px;font-weight:700;">📈 Graphiques</h2>
+            <p style="color:#7fb3e0;margin:2px 0 0 0;font-size:12px;">Analyse visuelle des marches publics</p>
+        </div>
+        <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:6px 14px;">
+            <span style="color:#f7941e;font-size:12px;font-weight:600;">📊 {total} offres</span>
+        </div>
     </div>
-    """, unsafe_allow_html=True)
+    """.format(total=len(df)), unsafe_allow_html=True)
 
     if st.button("⬅️ Retour au Dashboard"):
         st.session_state['vue'] = 'dashboard'
