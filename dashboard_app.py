@@ -22,24 +22,36 @@ if "authentifie" not in st.session_state:
 if not st.session_state.authentifie:
     st.markdown("""
     <style>
-    .stApp {background: #f8f8f8;}
-    .login-box {
+    .stApp {background: #f8f9fa;}
+    .login-card {
         max-width: 420px;
-        margin: 40px auto 0 auto;
-        padding: 40px;
+        margin: 2rem auto;
+        padding: 2.5rem;
         background: #ffffff;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        border-top: 4px solid #f7941e;
         text-align: center;
     }
-    .login-icon {font-size: 48px; margin-bottom: 16px;}
-    .login-title {font-size: 22px; font-weight: 700; color: #0f64b5; margin: 0 0 6px 0;}
-    .login-sub {font-size: 14px; color: rgba(71,78,84,0.8); margin: 0 0 28px 0;}
-    .login-ft {margin-top: 24px; font-size: 12px; color: rgba(71,78,84,0.6);}
+    .login-icon {font-size: 48px; margin-bottom: 12px;}
+    .login-title {font-size: 22px; font-weight: 700; color: #003366; margin: 0 0 6px 0;}
+    .login-sub {font-size: 14px; color: #333333; margin: 0 0 24px 0;}
+    .login-ft {margin-top: 20px; font-size: 12px; color: #333333; border-top: 1px solid #e9ecef; padding-top: 12px;}
+    .stButton > button[kind="primary"] {
+        background-color: #f7941e !important;
+        color: #003366 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+    }
+    .stButton > button[kind="primary"]:hover {
+        background-color: #e67e22 !important;
+        color: white !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="login-box">', unsafe_allow_html=True)
+    st.markdown('<div class="login-card">', unsafe_allow_html=True)
     st.markdown('<div class="login-icon">&#128274;</div>', unsafe_allow_html=True)
     st.markdown('<div class="login-title">Dashboard Marches Publics</div>', unsafe_allow_html=True)
     st.markdown('<div class="login-sub">Connectez-vous pour acceder au tableau de bord</div>', unsafe_allow_html=True)
