@@ -164,6 +164,9 @@ with st.sidebar:
     if st.button("📊 Dashboard", use_container_width=True):
         st.session_state['vue'] = 'dashboard'
         st.rerun()
+    if st.button("📈 Graphiques", use_container_width=True):
+        st.session_state['vue'] = 'graphes'
+        st.rerun()
     if st.button("📋 Liste des offres", use_container_width=True):
         st.session_state['vue'] = 'offres'
         st.rerun()
@@ -295,6 +298,105 @@ if vue == 'offres':
     except ImportError:
         csv = df_filtre.to_csv(index=False, sep=';', encoding='utf-8-sig')
         st.download_button(label="📥 Telecharger (CSV)", data=csv.encode('utf-8-sig'), file_name='offres_marches_publics.csv', mime='text/csv', use_container_width=True)
+
+# ═══════════════════════════════════════════════════════════════
+# VUE GRAPHIQUES
+# ═══════════════════════════════════════════════════════════════
+elif vue == 'graphes':
+    st.markdown("""
+    <div style="background:linear-gradient(135deg,#003366,#002244);padding:20px 28px;border-radius:12px;margin-bottom:20px;">
+        <h2 style="color:white;margin:0;">📈 Graphiques et Statistiques</h2>
+        <p style="color:#99c2ff;margin:4px 0 0 0;font-size:13px;">Analyse visuelle des marchés publics</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("⬅️ Retour au Dashboard"):
+        st.session_state['vue'] = 'dashboard'
+        st.rerun()
+
+    col_f1, col_f2, col_f3 = st.columns(3)
+    with col_f1:
+        filtre_it = st.selectbox("🏢 Secteur", ["Tous", "IT", "Non-IT"])
+    with col_f2:
+        regions = ["Toutes"] + sorted(df['lieu'].unique().tolist())
+        filtre_region = st.selectbox("📍 Region", regions)
+    with col_f3:
+        categories = ["Toutes"] + sorted(df['categorie'].unique().tolist())
+        filtre_categorie = st.selectbox("🏷️ Categorie", categories)
+
+    df_filtre = df.copy()
+    if filtre_it == "IT":
+        df_filtre = df_filtre[df_filtre['est_informatique'] == True]
+    elif filtre_it == "Non-IT":
+        df_filtre = df_filtre[df_filtre['est_informatique'] == False]
+    if filtre_region != "Toutes":
+        df_filtre = df_filtre[df_filtre['lieu'] == filtre_region]
+    if filtre_categorie != "Toutes":
+        df_filtre = df_filtre[df_filtre['categorie'] == filtre_categorie]
+    df_filtre = df_filtre.sort_values('id', ascending=True)
+
+    col_g1, col_g2 = st.columns(2)
+    with col_g1:
+        st.markdown("**Offres par mois**")
+        if not df_filtre.empty:
+            offres_par_mois = df_filtre.groupby(df_filtre['date_limite'].dt.to_period('M')).size()
+            offres_par_mois.index = offres_par_mois.index.astype(str)
+            st.bar_chart(offres_par_mois, use_container_width=True)
+    with col_g2:
+        st.markdown("**Top 10 regions**")
+        if not df_filtre.empty:
+            top_reg = df_filtre.groupby('lieu').size().reset_index(name='count')
+            top_reg = top_reg.sort_values('count', ascending=False).head(10)
+            st.bar_chart(top_reg.set_index('lieu'))
+
+    col_g3, col_g4 = st.columns(2)
+    with col_g3:
+        st.markdown("**Par categorie**")
+        if not df_filtre.empty:
+            cats = df_filtre.groupby('categorie').size().reset_index(name='count')
+            st.bar_chart(cats.set_index('categorie'))
+    with col_g4:
+        st.markdown("**IT vs Non-IT**")
+        if not df_filtre.empty:
+            it_vs = df_filtre['est_informatique'].value_counts().reset_index()
+            it_vs.columns = ['type', 'count']
+            it_vs['type'] = it_vs['type'].map({True: 'IT', False: 'Non-IT'})
+            st.bar_chart(it_vs.set_index('type'))
+
+    st.markdown('<div class="section-title">Mots-cles les plus utilises (offres IT)</div>', unsafe_allow_html=True)
+    if not df_filtre.empty:
+        IT_df = df_filtre[df_filtre['est_informatique'] == True].copy()
+        mots_series = IT_df['mots_cles'].str.split(',\s*').explode().str.strip()
+        mots_series = mots_series[mots_series != '']
+        if not mots_series.empty:
+            top_mots = mots_series.value_counts().head(10)
+            top_mots = top_mots.sort_values(ascending=True)
+            st.bar_chart(top_mots, use_container_width=True, height=350)
+            st.caption(", ".join([f"**{m}**: {c}" for m, c in top_mots.items()]))
+        else:
+            st.info("Aucun mot-cle associe aux offres IT")
+    else:
+        st.info("Aucune offre IT dans la selection")
+
+    if not df_filtre.empty:
+        maintenant = pd.Timestamp.now(tz='UTC')
+        u = df_filtre[df_filtre['date_limite'].notna() & (df_filtre['date_limite'] < maintenant)]
+        if not u.empty:
+            st.markdown('<div class="section-title">⏰ Offres depassees</div>', unsafe_allow_html=True)
+            u_par_jour = u.groupby(u['date_limite'].dt.date).size().reset_index(name='nombre')
+            u_par_jour.columns = ['Date', 'Nombre']
+            u_par_jour = u_par_jour.sort_values('Date', ascending=False).head(15)
+            st.bar_chart(u_par_jour.set_index('Date'), use_container_width=True, height=300)
+            col_u1, col_u2, col_u3 = st.columns(3)
+            col_u1.metric("Total depassees", len(u))
+            col_u2.metric("IT depassees", u[u['est_informatique']==True].shape[0])
+            col_u3.metric("Derniere depassee", u['date_limite'].max().strftime('%d/%m/%Y') if not u.empty else "N/A")
+
+    st.markdown('<div class="section-title">Top 10 acheteurs</div>', unsafe_allow_html=True)
+    if not df_filtre.empty:
+        acheteurs = df_filtre.groupby('acheteur').size().reset_index(name='count')
+        acheteurs = acheteurs.sort_values('count', ascending=False).head(10)
+        st.bar_chart(acheteurs.set_index('acheteur'))
 
 # ═══════════════════════════════════════════════════════════════
 # VUE DASHBOARD (par defaut)
