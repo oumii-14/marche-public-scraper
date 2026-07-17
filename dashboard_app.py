@@ -23,25 +23,25 @@ if not st.session_state.authentifie:
     st.markdown("""
     <style>
     .stApp {background: #f5f7fa;}
-    h4 {margin-top: 0 !important;}
+    h3 {margin-top: 0 !important;}
     .stTextInput > div > div > input {
         border: 2px solid #e9ecef;
-        border-radius: 8px;
-        padding: 12px 14px;
-        font-size: 15px;
+        border-radius: 10px;
+        padding: 14px 18px;
+        font-size: 16px;
     }
     .stTextInput > div > div > input:focus {
         border-color: #f7941e;
-        box-shadow: 0 0 0 2px rgba(247,148,30,0.15);
+        box-shadow: 0 0 0 3px rgba(247,148,30,0.2);
     }
     .stButton > button[kind="primary"] {
         background-color: #f7941e !important;
         color: #003366 !important;
         border: none !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         font-weight: 700 !important;
-        font-size: 15px !important;
-        padding: 10px 0 !important;
+        font-size: 17px !important;
+        padding: 14px 0 !important;
     }
     .stButton > button[kind="primary"]:hover {
         background-color: #e67e22 !important;
@@ -50,10 +50,10 @@ if not st.session_state.authentifie:
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h4 style='color:#003366;margin:0;'>Dashboard Marches Publics</h4>", unsafe_allow_html=True)
-    st.caption("Connectez-vous pour acceder au tableau de bord")
+    st.markdown("<h3 style='color:#003366;margin:0;'>Dashboard Marches Publics</h3>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#666666;margin-top:4px;'>Connectez-vous pour acceder au tableau de bord</p>", unsafe_allow_html=True)
 
-    mot_passe = st.text_input("", type="password", placeholder="Mot de passe", label_visibility="collapsed")
+    mot_passe = st.text_input("", type="password", placeholder="Entrez votre mot de passe", label_visibility="collapsed")
 
     if st.button("Se connecter", use_container_width=True, type="primary"):
         if mot_passe == MOT_DE_PASSE:
@@ -62,7 +62,7 @@ if not st.session_state.authentifie:
         else:
             st.error("Mot de passe incorrect.")
 
-    st.caption("Acces reserve aux decideurs")
+    st.markdown("<p style='color:#999999;font-size:13px;margin-top:16px;'>Acces reserve aux decideurs</p>", unsafe_allow_html=True)
     st.stop()
 
 # ─── Auto-refresh ───
