@@ -439,6 +439,65 @@ elif vue == 'graphes':
         acheteurs = acheteurs.sort_values('count', ascending=False).head(10)
         st.bar_chart(acheteurs.set_index('acheteur'))
 
+    # ─── Export ───
+    st.markdown('<div class="section-title">📥 Exporter les donnees</div>', unsafe_allow_html=True)
+    col_ex1, col_ex2 = st.columns(2)
+    with col_ex1:
+        try:
+            import io
+            buffer = io.BytesIO()
+            cols_export = ['reference', 'objet', 'acheteur', 'lieu', 'date_limite', 'budget', 'est_informatique', 'est_annule', 'categorie', 'mots_cles']
+            df_export = df_filtre[cols_export].copy()
+            df_export.columns = ['Reference', 'Objet', 'Acheteur', 'Lieu', 'Date limite', 'Budget', 'IT', 'Annule', 'Categorie', 'Mots-cles']
+            df_export['IT'] = df_export['IT'].map({True: 'Oui', False: 'Non'})
+            df_export['Annule'] = df_export['Annule'].map({True: 'Oui', False: 'Non'})
+            for col in df_export.select_dtypes(include=['datetimetz']).columns:
+                df_export[col] = df_export[col].dt.tz_localize(None)
+            with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+                df_export.to_excel(writer, index=False, sheet_name='Offres filtrees')
+                stats_data = {
+                    'Metric': ['Total offres', 'Offres IT', 'Annulees', 'Date export'],
+                    'Valeur': [len(df_filtre), len(df_filtre[df_filtre['est_informatique']==True]), len(df_filtre[df_filtre['est_annule']==True]), datetime.now().strftime('%d/%m/%Y %H:%M')]
+                }
+                pd.DataFrame(stats_data).to_excel(writer, index=False, sheet_name='Resume')
+            st.download_button(label="📥 Exporter Excel", data=buffer.getvalue(), file_name='statistiques_marches_publics.xlsx', mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', use_container_width=True)
+        except Exception:
+            st.warning("Export non disponible")
+    with col_ex2:
+        try:
+            import matplotlib
+            matplotlib.use('Agg')
+            import matplotlib.pyplot as plt
+            import io
+
+            fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+            fig.suptitle('Statistiques Marches Publics', fontsize=14, fontweight='bold', color='#003366')
+
+            if not df_filtre.empty:
+                df_filtre.groupby(df_filtre['date_limite'].dt.to_period('M')).size().plot(kind='bar', ax=axes[0,0], color='#003366')
+                axes[0,0].set_title('Offres par mois')
+                axes[0,0].tick_params(axis='x', rotation=45)
+
+                top_r = df_filtre.groupby('lieu').size().sort_values(ascending=False).head(5)
+                top_r.plot(kind='barh', ax=axes[0,1], color='#f7941e')
+                axes[0,1].set_title('Top 5 regions')
+
+                cat_data = df_filtre.groupby('categorie').size()
+                cat_data.plot(kind='pie', ax=axes[1,0], autopct='%1.0f%%', colors=['#003366','#f7941e','#28a745'])
+                axes[1,0].set_title('Par categorie')
+
+                it_data = df_filtre['est_informatique'].value_counts().rename({True:'IT', False:'Non-IT'})
+                it_data.plot(kind='pie', ax=axes[1,1], autopct='%1.0f%%', colors=['#28a745','#dc3545'])
+                axes[1,1].set_title('IT vs Non-IT')
+
+            plt.tight_layout()
+            buf = io.BytesIO()
+            fig.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+            plt.close(fig)
+            st.download_button(label="📷 Telecharger graphiques (PNG)", data=buf.getvalue(), file_name='graphiques_marches_publics.png', mime='image/png', use_container_width=True)
+        except ImportError:
+            st.info("matplotlib non installe")
+
 # ═══════════════════════════════════════════════════════════════
 # VUE DASHBOARD (par defaut)
 # ═══════════════════════════════════════════════════════════════
