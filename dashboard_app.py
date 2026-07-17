@@ -23,11 +23,12 @@ if not st.session_state.authentifie:
     st.markdown("""
     <style>
     .stApp {background: #f5f7fa;}
+    h4 {margin-top: 0 !important;}
     .stTextInput > div > div > input {
         border: 2px solid #e9ecef;
         border-radius: 8px;
-        padding: 10px 14px;
-        font-size: 14px;
+        padding: 8px 12px;
+        font-size: 13px;
     }
     .stTextInput > div > div > input:focus {
         border-color: #f7941e;
@@ -39,12 +40,14 @@ if not st.session_state.authentifie:
         border: none !important;
         border-radius: 8px !important;
         font-weight: 700 !important;
-        padding: 8px 0 !important;
+        font-size: 14px !important;
+        padding: 6px 0 !important;
     }
     .stButton > button[kind="primary"]:hover {
         background-color: #e67e22 !important;
         color: white !important;
     }
+    .stCaption {font-size: 11px !important;}
     </style>
     """, unsafe_allow_html=True)
 
