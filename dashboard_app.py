@@ -15,20 +15,30 @@ st.set_page_config(page_title="Marches Publics - Dashboard", layout="wide")
 
 MOT_DE_PASSE = "marche2026"
 
+# ─── CSS Global ───
 st.markdown("""
 <style>
+.stApp {background: #f5f7fa;}
 .stButton > button[kind="primary"] {
     background-color: #f7941e !important;
     color: #003366 !important;
     border: none !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     font-weight: 700 !important;
-    font-size: 16px !important;
-    padding: 12px 0 !important;
+    font-size: 15px !important;
+    padding: 10px 0 !important;
 }
 .stButton > button[kind="primary"]:hover {
     background-color: #e67e22 !important;
     color: white !important;
+}
+.section-title {
+    color: #003366;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 24px 0 12px 0;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #f7941e;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -40,7 +50,6 @@ if "authentifie" not in st.session_state:
 if not st.session_state.authentifie:
     st.markdown("""
     <style>
-    .stApp {background: #f5f7fa;}
     h2 {margin-top: 0 !important;}
     .stTextInput > div > div > input {
         border: 2px solid #e9ecef;
@@ -73,6 +82,23 @@ if not st.session_state.authentifie:
 # ─── Auto-refresh ───
 st_autorefresh(interval=300000, key="auto_refresh")
 
+# ─── Header ───
+st.markdown("""
+<div style="background:linear-gradient(135deg,#003366,#002244);padding:20px 28px;border-radius:0 0 12px 12px;margin:-10px -10px 20px -10px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+            <span style="color:#ffffff;font-size:22px;font-weight:700;">MARCHES PUBLICS MAROC</span>
+            <span style="color:#f7941e;font-size:18px;font-weight:600;margin-left:12px;">Tableau de bord</span>
+            <br><span style="color:#99c2ff;font-size:13px;">Plateforme de veille automatisee des appels d'offres IT</span>
+        </div>
+        <div style="text-align:right;">
+            <span style="color:#ffffff;font-size:13px;">👤 Decideur</span><br>
+            <a href="#" style="color:#f7941e;font-size:12px;text-decoration:none;" id="logout-link">Deconnexion</a>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 # ─── Sidebar deconnexion ───
 with st.sidebar:
     st.markdown("""
@@ -97,9 +123,6 @@ with st.sidebar:
         st.session_state.authentifie = False
         st.rerun()
 
-# ─── Titre ───
-st.title("Tableau de bord - Veille des marches publics")
-
 # ─── Charge data ───
 def charger_donnees():
     offres = Consultation.objects.select_related('acheteur', 'categorie').all()
@@ -123,21 +146,6 @@ def charger_donnees():
 
 df = charger_donnees()
 
-# ─── Sante systeme ───
-with st.expander("Systeme", expanded=False):
-    cols = st.columns(3)
-    dernier_hist = HistoriqueScraping.objects.order_by('-date_scraping').first()
-    if dernier_hist:
-        cols[0].success(f"Scraper actif (dernier: {dernier_hist.date_scraping.strftime('%d/%m/%Y %H:%M')})")
-    else:
-        cols[0].warning("Aucun scraping effectue")
-    alertes_ajd = Alerte.objects.filter(date_envoi__date=date.today()).count()
-    cols[1].success(f"Email operationnel ({alertes_ajd} alertes aujourd'hui)")
-    proch = datetime.now().replace(hour=10, minute=0, second=0, microsecond=0)
-    if datetime.now() >= proch:
-        proch += timedelta(days=1)
-    cols[2].warning(f"Prochaine execution: {proch.strftime('%d/%m/%Y %H:%M')}")
-
 # ─── KPIs ───
 total = len(df)
 it = df[df['est_informatique'] == True].shape[0]
@@ -149,22 +157,72 @@ hier = df[df['date_publication'].dt.date == (datetime.now() - timedelta(1)).date
 total_hier = len(hier)
 it_hier = hier[hier['est_informatique'] == True].shape[0] if not hier.empty else 0
 
-col1, col2, col3, col4 = st.columns(4)
-col1.metric("Total offres", total, delta=f"+{total_hier} vs hier")
-col2.metric("Offres IT", f"{it} ({it_pct}%)", delta=f"+{it_hier} vs hier")
-col3.metric("Annulees", annulees)
-col4.metric("Urgentes", urgentes, delta=f"{round(urgentes/total*100)}% des offres")
+st.markdown('<div class="section-title">Statistiques generales</div>', unsafe_allow_html=True)
 
-# ─── Offres du jour ───
+kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+
+with kpi1:
+    st.markdown(f"""
+    <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #003366;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><span style="color:#666;font-size:13px;">Total offres</span><br>
+            <span style="color:#003366;font-size:28px;font-weight:700;">{total}</span></div>
+            <span style="font-size:28px;">📄</span>
+        </div>
+        <span style="color:#28a745;font-size:12px;">+{total_hier} vs hier</span>
+    </div>""", unsafe_allow_html=True)
+
+with kpi2:
+    st.markdown(f"""
+    <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #28a745;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><span style="color:#666;font-size:13px;">Offres IT</span><br>
+            <span style="color:#003366;font-size:28px;font-weight:700;">{it}</span>
+            <span style="color:#28a745;font-size:13px;margin-left:6px;">({it_pct}%)</span></div>
+            <span style="font-size:28px;">💻</span>
+        </div>
+        <span style="color:#28a745;font-size:12px;">+{it_hier} vs hier</span>
+    </div>""", unsafe_allow_html=True)
+
+with kpi3:
+    st.markdown(f"""
+    <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #dc3545;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><span style="color:#666;font-size:13px;">Annulees</span><br>
+            <span style="color:#003366;font-size:28px;font-weight:700;">{annulees}</span></div>
+            <span style="font-size:28px;">❌</span>
+        </div>
+    </div>""", unsafe_allow_html=True)
+
+with kpi4:
+    st.markdown(f"""
+    <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #f7941e;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><span style="color:#666;font-size:13px;">Urgentes</span><br>
+            <span style="color:#003366;font-size:28px;font-weight:700;">{urgentes}</span></div>
+            <span style="font-size:28px;">⏰</span>
+        </div>
+        <span style="color:#f7941e;font-size:12px;">{round(urgentes/total*100) if total else 0}% des offres</span>
+    </div>""", unsafe_allow_html=True)
+
+# ─── Banner alerte ───
 ajd = df[df['date_limite'].dt.date == date.today()]
 it_ajd = ajd[ajd['est_informatique'] == True].shape[0]
 if not ajd.empty:
-    st.info(f"Nouvelles offres aujourd'hui : {len(ajd)} offres dont {it_ajd} IT")
+    taux_ajd = round(it_ajd/len(ajd)*100) if len(ajd) > 0 else 0
+    st.markdown(f"""
+    <div style="background:#fff5e6;border:1px solid #f7941e;border-radius:10px;padding:16px 20px;margin:16px 0;">
+        <span style="color:#003366;font-weight:700;">Nouvelles offres aujourd'hui :</span>
+        <span style="color:#003366;">{len(ajd)} offres</span> |
+        <span style="color:#f7941e;font-weight:700;">{it_ajd} offres IT</span> |
+        <span style="color:#28a745;font-weight:700;">{taux_ajd}% de taux IT</span>
+        <br><span style="color:#999;font-size:12px;">Derniere mise a jour : {datetime.now().strftime('%d/%m/%Y a %H:%M')}</span>
+    </div>""", unsafe_allow_html=True)
 
 # ─── Filtres ───
-st.subheader("Filtres")
-col_f1, col_f2 = st.columns(2)
-col_f3, col_f4 = st.columns(2)
+st.markdown('<div class="section-title">Filtres</div>', unsafe_allow_html=True)
+
+col_f1, col_f2, col_f3 = st.columns(3)
 with col_f1:
     filtre_it = st.selectbox("Secteur", ["Tous", "IT", "Non-IT"])
 with col_f2:
@@ -173,15 +231,16 @@ with col_f2:
 with col_f3:
     categories = ["Toutes"] + sorted(df['categorie'].unique().tolist())
     filtre_categorie = st.selectbox("Categorie", categories)
+
+col_f4, col_f5, col_f6 = st.columns([2, 1, 1])
 with col_f4:
-    recherche = st.text_input("Recherche", placeholder="Ref, objet, acheteur...")
-col_f5, col_f6 = st.columns(2)
+    recherche = st.text_input("", placeholder="Rechercher par reference, objet, acheteur...", label_visibility="collapsed")
 with col_f5:
     date_min = df['date_limite'].min().date() if pd.notna(df['date_limite'].min()) else date.today()
     date_max = df['date_limite'].max().date() if pd.notna(df['date_limite'].max()) else date.today()
-    date_debut = st.date_input("Date debut", value=date_min, min_value=date_min, max_value=date_max)
+    date_debut = st.date_input("Du", value=date_min, min_value=date_min, max_value=date_max)
 with col_f6:
-    date_fin = st.date_input("Date fin", value=date_max, min_value=date_min, max_value=date_max)
+    date_fin = st.date_input("Au", value=date_max, min_value=date_min, max_value=date_max)
 
 df_filtre = df.copy()
 if filtre_it == "IT":
@@ -204,18 +263,19 @@ df_filtre = df_filtre[
     (df_filtre['date_limite'].dt.date <= date_fin)
 ]
 df_filtre = df_filtre.sort_values('id', ascending=True)
-st.markdown(f"**{len(df_filtre)} offre(s) affichee(s)**")
 
 # ─── Graphiques ───
+st.markdown('<div class="section-title">Graphiques</div>', unsafe_allow_html=True)
+
 col_g1, col_g2 = st.columns(2)
 with col_g1:
-    st.subheader("Offres par mois")
+    st.markdown("**Offres par mois**")
     if not df_filtre.empty:
         offres_par_mois = df_filtre.groupby(df_filtre['date_limite'].dt.to_period('M')).size()
         offres_par_mois.index = offres_par_mois.index.astype(str)
         st.bar_chart(offres_par_mois, use_container_width=True)
 with col_g2:
-    st.subheader("Top 10 regions")
+    st.markdown("**Top 10 regions**")
     if not df_filtre.empty:
         top_reg = df_filtre.groupby('lieu').size().reset_index(name='count')
         top_reg = top_reg.sort_values('count', ascending=False).head(10)
@@ -223,20 +283,19 @@ with col_g2:
 
 col_g3, col_g4 = st.columns(2)
 with col_g3:
-    st.subheader("Par categorie")
+    st.markdown("**Par categorie**")
     if not df_filtre.empty:
         cats = df_filtre.groupby('categorie').size().reset_index(name='count')
         st.bar_chart(cats.set_index('categorie'))
 with col_g4:
-    st.subheader("IT vs Non-IT")
+    st.markdown("**IT vs Non-IT**")
     if not df_filtre.empty:
         it_vs = df_filtre['est_informatique'].value_counts().reset_index()
         it_vs.columns = ['type', 'count']
         it_vs['type'] = it_vs['type'].map({True: 'IT', False: 'Non-IT'})
         st.bar_chart(it_vs.set_index('type'))
 
-# Mots-cles les plus utilises
-st.subheader("Mots-cles les plus utilises (offres IT)")
+st.markdown('<div class="section-title">Mots-cles les plus utilises (offres IT)</div>', unsafe_allow_html=True)
 if not df_filtre.empty:
     IT_df = df_filtre[df_filtre['est_informatique'] == True].copy()
     mots_series = IT_df['mots_cles'].str.split(',\s*').explode().str.strip()
@@ -244,55 +303,54 @@ if not df_filtre.empty:
     if not mots_series.empty:
         top_mots = mots_series.value_counts().head(10)
         top_mots = top_mots.sort_values(ascending=True)
-        st.bar_chart(top_mots, use_container_width=True, height=400)
+        st.bar_chart(top_mots, use_container_width=True, height=350)
         st.caption(", ".join([f"**{m}**: {c}" for m, c in top_mots.items()]))
     else:
         st.info("Aucun mot-cle associe aux offres IT filtrees")
 else:
     st.info("Aucune offre IT dans la selection")
 
-# Historique scrapings
-st.subheader("Historique des scrapings")
-historique = HistoriqueScraping.objects.all().order_by('-date_scraping')[:10]
-if historique:
-    h_data = []
-    for h in historique:
-        h_data.append({'Date': h.date_scraping, 'Consultations': h.nb_consultations, 'IT': h.nb_offres_it, 'Statut': h.statut})
-    h_df = pd.DataFrame(h_data)
-    h_df["Date"] = h_df["Date"].dt.strftime("%d/%m %H:%M")
-    st.dataframe(h_df, use_container_width=True, height=250)
-else:
-    st.warning("Aucun historique de scraping")
-
-col_g5, col_g6 = st.columns(2)
-with col_g5:
-    st.subheader("Top 10 acheteurs")
+# ─── Historique + acheteurs ───
+col_h1, col_h2 = st.columns(2)
+with col_h1:
+    st.markdown('<div class="section-title">Historique des scrapings</div>', unsafe_allow_html=True)
+    historique = HistoriqueScraping.objects.all().order_by('-date_scraping')[:10]
+    if historique:
+        h_data = []
+        for h in historique:
+            h_data.append({'Date': h.date_scraping, 'Consultations': h.nb_consultations, 'IT': h.nb_offres_it, 'Statut': h.statut})
+        h_df = pd.DataFrame(h_data)
+        h_df["Date"] = h_df["Date"].dt.strftime("%d/%m %H:%M")
+        st.dataframe(h_df, use_container_width=True, height=250)
+    else:
+        st.warning("Aucun historique de scraping")
+with col_h2:
+    st.markdown('<div class="section-title">Top 10 acheteurs</div>', unsafe_allow_html=True)
     if not df_filtre.empty:
         acheteurs = df_filtre.groupby('acheteur').size().reset_index(name='count')
         acheteurs = acheteurs.sort_values('count', ascending=False).head(10)
         st.bar_chart(acheteurs.set_index('acheteur'))
-with col_g6:
-    st.subheader("Urgentes (depassees)")
-    if not df_filtre.empty:
-        maintenant = pd.Timestamp.now(tz='UTC')
-        u = df_filtre[df_filtre['date_limite'].notna() & (df_filtre['date_limite'] < maintenant)]
-        if not u.empty:
-            urg_par_jour = u.groupby(u['date_limite'].dt.date).size()
-            st.line_chart(urg_par_jour)
-        else:
-            st.info("Aucune offre urgente")
 
-# ─── Tableau avec couleurs ───
-st.subheader("Liste des offres")
+# ─── Urgentes ───
+if not df_filtre.empty:
+    maintenant = pd.Timestamp.now(tz='UTC')
+    u = df_filtre[df_filtre['date_limite'].notna() & (df_filtre['date_limite'] < maintenant)]
+    if not u.empty:
+        st.markdown('<div class="section-title">Offres depassees</div>', unsafe_allow_html=True)
+        urg_par_jour = u.groupby(u['date_limite'].dt.date).size()
+        st.line_chart(urg_par_jour)
+
+# ─── Tableau ───
+st.markdown('<div class="section-title">Liste des offres</div>', unsafe_allow_html=True)
 cols_aff = ['id', 'reference', 'objet', 'acheteur', 'lieu', 'date_limite', 'budget', 'est_informatique', 'est_annule', 'categorie', 'mots_cles']
 df_aff = df_filtre[cols_aff].copy()
 df_aff.columns = ['ID', 'Reference', 'Objet', 'Acheteur', 'Lieu', 'Date limite', 'Budget', 'IT', 'Annule', 'Categorie', 'Mots-cles']
 
 def color_row(row):
     if row['Annule'] == True:
-        return ['background-color: #fde8e8'] * len(row)
+        return ['background-color: #fce4ec'] * len(row)
     elif row['IT'] == True:
-        return ['background-color: #e8f4e8'] * len(row)
+        return ['background-color: #e8f5e9'] * len(row)
     return [''] * len(row)
 
 df_aff_val = df_aff.copy()
@@ -302,7 +360,7 @@ df_aff_val['Date limite'] = df_aff_val['Date limite'].dt.strftime('%d/%m/%Y %H:%
 
 st.dataframe(df_aff_val.style.apply(color_row, axis=1), use_container_width=True, height=500)
 
-# Export Excel
+# Export
 try:
     import io
     buffer = io.BytesIO()
@@ -316,4 +374,10 @@ except ImportError:
     csv = df_filtre.to_csv(index=False, sep=';', encoding='utf-8-sig')
     st.download_button(label="Telecharger (CSV)", data=csv.encode('utf-8-sig'), file_name='offres_marches_publics.csv', mime='text/csv', use_container_width=True)
 
-st.caption(f"Auto-refresh toutes les 5 min | Derniere mise a jour : {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+# ─── Footer ───
+st.markdown("""
+<div style="background:#003366;padding:16px 28px;border-radius:12px 12px 0 0;margin:24px -10px -10px -10px;text-align:center;">
+    <span style="color:#99c2ff;font-size:12px;">© 2026 - Plateforme de veille des marches publics</span><br>
+    <span style="color:#f7941e;font-size:11px;">🔒 Donnees securisees - Mise a jour automatique</span>
+</div>
+""", unsafe_allow_html=True)
