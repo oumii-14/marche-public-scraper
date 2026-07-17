@@ -23,60 +23,25 @@ if not st.session_state.authentifie:
     st.markdown("""
     <style>
     .stApp {background: #f5f7fa;}
-    .login-card {
-        max-width: 420px;
-        margin: 60px auto 0 auto;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        border-left: 4px solid #003366;
-        overflow: hidden;
+    .stButton > button[kind="primary"] {
+        background-color: #f7941e !important;
+        color: #003366 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
     }
-    .login-header {
-        background: #f7941e;
-        padding: 16px;
-        text-align: center;
-    }
-    .login-header span {
-        font-size: 32px;
-    }
-    .login-body {
-        padding: 32px;
-        text-align: center;
-    }
-    .login-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: #003366;
-        margin: 0 0 4px 0;
-    }
-    .login-sub {
-        font-size: 13px;
-        color: #666666;
-        margin: 0 0 24px 0;
-    }
-    .login-footer {
-        border-top: 1px solid #e9ecef;
-        padding: 14px;
-        text-align: center;
-        font-size: 12px;
-        color: #666666;
-    }
-    .login-footer small {
-        color: #999999;
-        display: block;
-        margin-top: 2px;
+    .stButton > button[kind="primary"]:hover {
+        background-color: #e67e22 !important;
+        color: white !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="login-card">', unsafe_allow_html=True)
-    st.markdown('<div class="login-header"><span>&#128274;</span></div>', unsafe_allow_html=True)
-    st.markdown('<div class="login-body">', unsafe_allow_html=True)
-    st.markdown('<div class="login-title">Dashboard Marches Publics</div>', unsafe_allow_html=True)
-    st.markdown('<div class="login-sub">Connectez-vous pour acceder au tableau de bord</div>', unsafe_allow_html=True)
+    st.markdown("# :lock: Dashboard Marches Publics")
+    st.caption("Connectez-vous pour acceder au tableau de bord")
+    st.markdown("---")
 
-    mot_passe = st.text_input("", type="password", placeholder="Entrez votre mot de passe", label_visibility="collapsed")
+    mot_passe = st.text_input("Mot de passe", type="password", placeholder="Entrez votre mot de passe")
 
     if st.button("Se connecter", use_container_width=True, type="primary"):
         if mot_passe == MOT_DE_PASSE:
@@ -85,8 +50,8 @@ if not st.session_state.authentifie:
         else:
             st.error("Mot de passe incorrect.")
 
-    st.markdown('<div class="login-footer">&#128274; Acces reserve aux decideurs<small>Contactez l\'administrateur si necessaire</small></div>', unsafe_allow_html=True)
-    st.markdown('</div></div>', unsafe_allow_html=True)
+    st.markdown("---")
+    st.caption("Acces reserve aux decideurs")
     st.stop()
 
 # ─── Auto-refresh ───
