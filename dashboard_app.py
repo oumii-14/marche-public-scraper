@@ -48,7 +48,7 @@ if not st.session_state.authentifie:
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h4 style='color:#003366;margin:0;'>:lock: Dashboard Marches Publics</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color:#003366;margin:0;'>Dashboard Marches Publics</h4>", unsafe_allow_html=True)
     st.caption("Connectez-vous pour acceder au tableau de bord")
 
     mot_passe = st.text_input("", type="password", placeholder="Mot de passe", label_visibility="collapsed")
