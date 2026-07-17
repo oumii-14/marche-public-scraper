@@ -251,11 +251,15 @@ if vue == 'offres':
         categories = ["Toutes"] + sorted(df['categorie'].unique().tolist())
         filtre_categorie = st.selectbox("🏷️ Categorie", categories)
 
-    col_f4, col_f5 = st.columns([3, 1])
+    col_f4, col_f5, col_f6 = st.columns([2, 1, 1])
     with col_f4:
         recherche = st.text_input("", placeholder="🔎 Rechercher par reference, objet, acheteur...", label_visibility="collapsed")
     with col_f5:
-        filtre_cat_it = st.selectbox("💻 Type", ["Tous", "IT", "Non-IT"])
+        date_min = df['date_limite'].min().date() if pd.notna(df['date_limite'].min()) else date.today()
+        date_max = df['date_limite'].max().date() if pd.notna(df['date_limite'].max()) else date.today()
+        date_debut = st.date_input("Du", value=date_min, min_value=date_min, max_value=date_max)
+    with col_f6:
+        date_fin = st.date_input("Au", value=date_max, min_value=date_min, max_value=date_max)
 
     df_filtre = df.copy()
     if filtre_it == "IT":
@@ -272,6 +276,12 @@ if vue == 'offres':
             df_filtre['objet'].str.contains(recherche, case=False, na=False) |
             df_filtre['acheteur'].str.contains(recherche, case=False, na=False)
         ]
+    df_filtre = df_filtre[
+        df_filtre['date_limite'].notna() &
+        (df_filtre['date_limite'].dt.date >= date_debut) &
+        (df_filtre['date_limite'].dt.date <= date_fin)
+    ]
+    df_filtre = df_filtre.sort_values('id', ascending=True)
 
     cols_aff = ['id', 'reference', 'objet', 'acheteur', 'lieu', 'date_limite', 'budget', 'est_informatique', 'est_annule', 'categorie', 'mots_cles']
     df_aff = df_filtre[cols_aff].copy()
@@ -334,6 +344,16 @@ elif vue == 'graphes':
         categories = ["Toutes"] + sorted(df['categorie'].unique().tolist())
         filtre_categorie = st.selectbox("🏷️ Categorie", categories)
 
+    col_f4, col_f5, col_f6 = st.columns([2, 1, 1])
+    with col_f4:
+        recherche = st.text_input("", placeholder="🔎 Rechercher par reference, objet, acheteur...", label_visibility="collapsed")
+    with col_f5:
+        date_min = df['date_limite'].min().date() if pd.notna(df['date_limite'].min()) else date.today()
+        date_max = df['date_limite'].max().date() if pd.notna(df['date_limite'].max()) else date.today()
+        date_debut = st.date_input("Du", value=date_min, min_value=date_min, max_value=date_max)
+    with col_f6:
+        date_fin = st.date_input("Au", value=date_max, min_value=date_min, max_value=date_max)
+
     df_filtre = df.copy()
     if filtre_it == "IT":
         df_filtre = df_filtre[df_filtre['est_informatique'] == True]
@@ -343,6 +363,17 @@ elif vue == 'graphes':
         df_filtre = df_filtre[df_filtre['lieu'] == filtre_region]
     if filtre_categorie != "Toutes":
         df_filtre = df_filtre[df_filtre['categorie'] == filtre_categorie]
+    if recherche:
+        df_filtre = df_filtre[
+            df_filtre['reference'].str.contains(recherche, case=False, na=False) |
+            df_filtre['objet'].str.contains(recherche, case=False, na=False) |
+            df_filtre['acheteur'].str.contains(recherche, case=False, na=False)
+        ]
+    df_filtre = df_filtre[
+        df_filtre['date_limite'].notna() &
+        (df_filtre['date_limite'].dt.date >= date_debut) &
+        (df_filtre['date_limite'].dt.date <= date_fin)
+    ]
     df_filtre = df_filtre.sort_values('id', ascending=True)
 
     col_g1, col_g2 = st.columns(2)
