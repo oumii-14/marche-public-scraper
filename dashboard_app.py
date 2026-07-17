@@ -18,20 +18,39 @@ MOT_DE_PASSE = "marche2026"
 # ─── CSS Global ───
 st.markdown("""
 <style>
-.stApp {background: #f5f7fa;}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+* {font-family: 'Inter', sans-serif !important;}
+.stApp {background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);}
+
+.stat-card {
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
 .stButton > button[kind="primary"] {
-    background-color: #f7941e !important;
-    color: #003366 !important;
+    background: linear-gradient(135deg, #f7941e, #e67e22) !important;
+    color: white !important;
     border: none !important;
-    border-radius: 8px !important;
-    font-weight: 700 !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
     font-size: 15px !important;
     padding: 10px 0 !important;
+    transition: all 0.3s !important;
 }
 .stButton > button[kind="primary"]:hover {
-    background-color: #e67e22 !important;
-    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(247,148,30,0.4) !important;
 }
+
 .section-title {
     color: #003366;
     font-size: 16px;
@@ -39,6 +58,21 @@ st.markdown("""
     margin: 24px 0 12px 0;
     padding-bottom: 6px;
     border-bottom: 2px solid #f7941e;
+}
+
+.dataframe {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06) !important;
+}
+.dataframe thead th {
+    background: #003366 !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 10px 14px !important;
+}
+.dataframe tbody tr:hover {
+    background: #fff5e6 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -168,7 +202,7 @@ kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
 with kpi1:
     st.markdown(f"""
-    <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #003366;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+    <div class="stat-card">
         <div style="display:flex;justify-content:space-between;align-items:center;">
             <div><span style="color:#666;font-size:13px;">📄 Total offres</span><br>
             <span style="color:#003366;font-size:28px;font-weight:700;">{total}</span></div>
@@ -178,7 +212,7 @@ with kpi1:
 
 with kpi2:
     st.markdown(f"""
-    <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #28a745;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+    <div class="stat-card">
         <div style="display:flex;justify-content:space-between;align-items:center;">
             <div><span style="color:#666;font-size:13px;">💻 Offres IT</span><br>
             <span style="color:#003366;font-size:28px;font-weight:700;">{it}</span>
@@ -189,7 +223,7 @@ with kpi2:
 
 with kpi3:
     st.markdown(f"""
-    <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #dc3545;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+    <div class="stat-card">
         <div style="display:flex;justify-content:space-between;align-items:center;">
             <div><span style="color:#666;font-size:13px;">❌ Annulees</span><br>
             <span style="color:#003366;font-size:28px;font-weight:700;">{annulees}</span></div>
@@ -198,7 +232,7 @@ with kpi3:
 
 with kpi4:
     st.markdown(f"""
-    <div style="background:#fff;border-radius:12px;padding:20px;border-left:4px solid #f7941e;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+    <div class="stat-card">
         <div style="display:flex;justify-content:space-between;align-items:center;">
             <div><span style="color:#666;font-size:13px;">⏰ Urgentes</span><br>
             <span style="color:#003366;font-size:28px;font-weight:700;">{urgentes}</span></div>
