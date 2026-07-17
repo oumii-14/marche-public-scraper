@@ -17,35 +17,31 @@ MOT_DE_PASSE = "marche2026"
 
 st.markdown("""
 <style>
-.login-card {
-    max-width: 400px;
-    margin: 80px auto 0 auto;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: white;
+.stMain {background-color: #f5f7fa;}
+.login-box {
+    max-width: 420px;
+    margin: 60px auto;
+    padding: 48px 40px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
     text-align: center;
 }
-.login-title {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: #ffffff;
+.login-box h1 {
+    font-size: 22px;
+    color: #1e293b;
+    margin-bottom: 4px;
 }
-.login-subtitle {
+.login-box p {
+    color: #64748b;
     font-size: 14px;
-    color: #a0aec0;
-    margin-bottom: 30px;
-}
-.login-icon {
-    font-size: 60px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 .login-footer {
-    margin-top: 24px;
+    margin-top: 20px;
     font-size: 12px;
-    color: #718096;
+    color: #94a3b8;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -55,14 +51,13 @@ def verifier_mot_de_passe():
         st.session_state.authentifie = False
 
     if not st.session_state.authentifie:
-        st.markdown('<div class="login-icon">&#128274;</div>', unsafe_allow_html=True)
-        st.markdown('<div class="login-card">', unsafe_allow_html=True)
-        st.markdown('<div class="login-title">Acces Dashboard</div>', unsafe_allow_html=True)
-        st.markdown('<div class="login-subtitle">Veille des marches publics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-box">', unsafe_allow_html=True)
+        st.markdown('<h1>Dashboard Marches Publics</h1>', unsafe_allow_html=True)
+        st.markdown('<p>Connectez-vous pour acceder au tableau de bord</p>', unsafe_allow_html=True)
 
-        mot_passe = st.text_input("Mot de passe", type="password", placeholder="Entrez le mot de passe", label_visibility="collapsed")
+        mot_passe = st.text_input("", type="password", placeholder="Mot de passe", label_visibility="collapsed")
 
-        if st.button("Se connecter", use_container_width=True, type="primary"):
+        if st.button("Connexion", use_container_width=True, type="primary"):
             if mot_passe == MOT_DE_PASSE:
                 st.session_state.authentifie = True
                 st.rerun()
