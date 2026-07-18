@@ -192,7 +192,7 @@ Le dashboard propose **3 vues** navigables depuis la sidebar :
 
 | Vue | Description |
 |-----|-------------|
-| 📊 Dashboard | KPIs, alerte du jour, résumé rapide |
+| 📊 Dashboard | KPIs, banner offres IT du jour, résumé rapide |
 | 📈 Graphiques | Offres par mois, régions, catégories, IT vs Non-IT, mots-clés, offres dépassées, top acheteurs |
 | 📋 Liste des offres | Tableau interactif avec badges (IT/Annulé), export Excel |
 
@@ -222,7 +222,31 @@ cursor.execute("""
 
 ### Historique de scraping
 
-Chaque exécution du scraper enregistre un historique dans la table `HistoriqueScraping` : date, nombre d'offres trouvées, nombre d'offres IT, statut (Succès/Erreur). Visible dans `/admin/scraper/historiquescraping/`.
+Chaque exécution du scraper enregistre un historique dans la table `HistoriqueScraping` : date, nombre d'offres trouvées, nombre d'offres IT, statut (Succès/Erreur). Visible dans `/admin/scraper/historiquescraping/`. L'heure affichée est en heure Maroc (UTC+1).
+
+### Détection IT avec word boundaries
+
+La détection des offres IT utilise des **expressions régulières avec word boundaries** (`\b`) pour éviter les faux positifs. Par exemple, "informatique" ne matche pas "fournitures" mais matche "ACHAT DE MATÉRIEL INFORMATIQUE".
+
+```python
+est_it = any(re.search(r'\b' + re.escape(mot) + r'\b', objet_lower) for mot in mots)
+```
+
+### Script de recalcul IT
+
+Un script `scraper/recaler_it.py` permet de recalculer `est_informatique` et `mots_cles` pour toutes les offres en base :
+
+```bash
+python scraper/recaler_it.py
+```
+
+### Banner offres IT du jour (Dashboard)
+
+Le dashboard affiche un banner en haut avec :
+- Nombre d'offres IT trouvées aujourd'hui
+- Nombre total d'offres IT en base
+- Heure de la dernière alerte email
+- Bouton pour voir la liste des offres IT du jour
 
 ### Automatisation (Task Scheduler)
 
