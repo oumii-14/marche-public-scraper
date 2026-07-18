@@ -176,7 +176,8 @@ def extraire_donnees_offre(texte_offre):
         est_it = False
         if objet:
             mots = get_mots_cles()
-            est_it = any(mot in objet.lower() for mot in mots) if mots else False
+            objet_lower = objet.lower()
+            est_it = any(re.search(r'\b' + re.escape(mot) + r'\b', objet_lower) for mot in mots) if mots else False
 
         est_annule = 'annul' in texte_offre.lower()
 
@@ -269,7 +270,8 @@ def enregistrer_offre(donnees, driver=None, url_detail=None):
 
         if donnees.get('est_informatique') and donnees.get('objet'):
             mots = get_mots_cles()
-            mots_trouves = [m for m in mots if m in donnees['objet'].lower()]
+            objet_lower = donnees['objet'].lower()
+            mots_trouves = [m for m in mots if re.search(r'\b' + re.escape(m) + r'\b', objet_lower)]
             if mots_trouves:
                 mots_qs = MotCle.objects.filter(mot__in=mots_trouves)
                 consultation.mots_cles.add(*mots_qs)
