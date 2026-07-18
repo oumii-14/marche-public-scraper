@@ -558,16 +558,16 @@ else:
         </div>""", unsafe_allow_html=True)
 
     # ─── Banner alerte ───
-    ajd = df[df['date_limite'].dt.date == date.today()]
-    it_ajd = ajd[ajd['est_informatique'] == True].shape[0]
-    if not ajd.empty:
-        taux_ajd = round(it_ajd/len(ajd)*100) if len(ajd) > 0 else 0
+    from scraper.models import Alerte
+    total_it = df[df['est_informatique'] == True].shape[0]
+    deja_alertees = Alerte.objects.values_list('consultation_id', flat=True)
+    it_non_alertees = df[(df['est_informatique'] == True) & (~df['id'].isin(deja_alertees))].shape[0]
+    if it_non_alertees > 0:
         st.markdown(f"""
         <div style="background:#fff5e6;border:1px solid #f7941e;border-radius:10px;padding:16px 20px;margin:16px 0;">
-            <span style="color:#003366;font-weight:700;">Nouvelles offres aujourd'hui :</span>
-            <span style="color:#003366;">{len(ajd)} offres</span> |
-            <span style="color:#f7941e;font-weight:700;">{it_ajd} offres IT</span> |
-            <span style="color:#28a745;font-weight:700;">{taux_ajd}% de taux IT</span>
+            <span style="color:#003366;font-weight:700;">Nouvelles offres IT non alertees :</span>
+            <span style="color:#f7941e;font-weight:700;">{it_non_alertees} offres IT</span> |
+            <span style="color:#003366;">sur {total_it} offres IT au total</span>
             <br><span style="color:#999;font-size:12px;">Derniere mise a jour : {datetime.now().strftime('%d/%m/%Y a %H:%M')}</span>
         </div>""", unsafe_allow_html=True)
 
