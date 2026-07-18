@@ -560,12 +560,18 @@ else:
     # ─── Banner offres IT du jour ───
     from scraper.models import Alerte
     from django.utils import timezone
+    import pytz
+    Maroc = pytz.timezone('Africa/Casablanca')
     aujourd_hui = timezone.now().date()
     df['date_pub_date'] = pd.to_datetime(df['date_publication']).dt.date
     df_it_aujourd = df[(df['est_informatique'] == True) & (df['date_pub_date'] == aujourd_hui)]
     nb_it_jour = len(df_it_aujourd)
     derniere_alerte = Alerte.objects.order_by('-date_envoi').first()
-    date_derniere = derniere_alerte.date_envoi.strftime('%d/%m/%Y a %H:%M') if derniere_alerte else "Aucune"
+    if derniere_alerte:
+        date_local = derniere_alerte.date_envoi.astimezone(Maroc)
+        date_derniere = date_local.strftime('%d/%m/%Y a %H:%M')
+    else:
+        date_derniere = "Aucune"
     nb_total_it = df[df['est_informatique'] == True].shape[0]
 
     st.markdown(f"""
@@ -574,8 +580,8 @@ else:
             <span style="font-size:24px;">📬</span>
             <div>
                 <span style="color:white;font-size:14px;font-weight:600;">Nouvelles offres IT du jour ({aujourd_hui.strftime('%d/%m/%Y')})</span><br>
-                <span style="color:#f7941e;font-size:20px;font-weight:800;">{nb_it_jour} offres IT</span>
-                <span style="color:#7fb3e0;font-size:11px;margin-left:8px;">trouvees ce matin | {nb_total_it} IT au total</span>
+                <span style="color:#f7941e;font-size:20px;font-weight:800;">{nb_it_jour} offres IT detectees</span>
+                <span style="color:#7fb3e0;font-size:11px;margin-left:8px;">| {nb_total_it} offres IT en base</span>
             </div>
         </div>
         <div style="text-align:right;">
