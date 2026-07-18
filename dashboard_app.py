@@ -560,15 +560,14 @@ else:
     # ─── Banner offres IT du jour ───
     from scraper.models import Alerte
     from django.utils import timezone
-    import pytz
-    Maroc = pytz.timezone('Africa/Casablanca')
+    from datetime import timedelta
     aujourd_hui = timezone.now().date()
     df['date_pub_date'] = pd.to_datetime(df['date_publication']).dt.date
     df_it_aujourd = df[(df['est_informatique'] == True) & (df['date_pub_date'] == aujourd_hui)]
     nb_it_jour = len(df_it_aujourd)
     derniere_alerte = Alerte.objects.order_by('-date_envoi').first()
     if derniere_alerte:
-        date_local = derniere_alerte.date_envoi.astimezone(Maroc)
+        date_local = derniere_alerte.date_envoi + timedelta(hours=1)
         date_derniere = date_local.strftime('%d/%m/%Y a %H:%M')
     else:
         date_derniere = "Aucune"
