@@ -557,47 +557,49 @@ else:
             <span style="color:#f7941e;font-size:12px;">🟠 {round(urgentes/total*100) if total else 0}% des offres</span>
         </div>""", unsafe_allow_html=True)
 
-    # ─── Banner alerte ───
+    # ─── Banner offres IT du jour ───
     from scraper.models import Alerte
-    total_it = df[df['est_informatique'] == True].shape[0]
-    deja_alertees = Alerte.objects.values_list('consultation_id', flat=True)
-    df_it_non_alertees = df[(df['est_informatique'] == True) & (~df['id'].isin(deja_alertees))]
-    it_non_alertees = len(df_it_non_alertees)
+    from django.utils import timezone
+    aujourd_hui = timezone.now().date()
+    df['date_pub_date'] = pd.to_datetime(df['date_publication']).dt.date
+    df_it_aujourd = df[(df['est_informatique'] == True) & (df['date_pub_date'] == aujourd_hui)]
+    nb_it_jour = len(df_it_aujourd)
     derniere_alerte = Alerte.objects.order_by('-date_envoi').first()
     date_derniere = derniere_alerte.date_envoi.strftime('%d/%m/%Y a %H:%M') if derniere_alerte else "Aucune"
+    nb_total_it = df[df['est_informatique'] == True].shape[0]
 
     st.markdown(f"""
     <div style="background:#003366;border-radius:10px;padding:14px 20px;margin:12px 0;display:flex;align-items:center;justify-content:space-between;">
         <div style="display:flex;align-items:center;gap:12px;">
             <span style="font-size:24px;">📬</span>
             <div>
-                <span style="color:white;font-size:14px;font-weight:600;">Nouvelles offres IT non alertees</span><br>
-                <span style="color:#f7941e;font-size:20px;font-weight:800;">{it_non_alertees} offres IT</span>
-                <span style="color:#7fb3e0;font-size:11px;margin-left:8px;">non encore alertees</span>
+                <span style="color:white;font-size:14px;font-weight:600;">Nouvelles offres IT du jour ({aujourd_hui.strftime('%d/%m/%Y')})</span><br>
+                <span style="color:#f7941e;font-size:20px;font-weight:800;">{nb_it_jour} offres IT</span>
+                <span style="color:#7fb3e0;font-size:11px;margin-left:8px;">trouvees ce matin | {nb_total_it} IT au total</span>
             </div>
         </div>
         <div style="text-align:right;">
             <span style="background:#f7941e;color:#003366;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;">🔥 Nouveau</span><br>
-            <span style="color:#7fb3e0;font-size:11px;margin-top:4px;display:block;">Derniere alerte : {date_derniere}</span>
+            <span style="color:#7fb3e0;font-size:11px;margin-top:4px;display:block;">📧 Alerte envoyee : {date_derniere}</span>
         </div>
     </div>""", unsafe_allow_html=True)
 
-    if st.button("📋 Voir les {0} offres IT non alertees".format(it_non_alertees), use_container_width=True):
+    if nb_it_jour > 0 and st.button("📋 Voir les {0} offres IT du jour".format(nb_it_jour), use_container_width=True):
         st.session_state['voir_non_alertees'] = True
         st.rerun()
 
     if st.session_state.get('voir_non_alertees'):
-        st.markdown('<div class="section-title">📬 Offres IT non alertees</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="section-title">📬 Offres IT du jour ({aujourd_hui.strftime("%d/%m/%Y")})</div>', unsafe_allow_html=True)
         if st.button("⬅️ Retour au Dashboard"):
             st.session_state['voir_non_alertees'] = False
             st.rerun()
 
         cols_aff = ['id', 'reference', 'objet', 'acheteur', 'lieu', 'date_limite', 'budget', 'categorie', 'mots_cles']
-        df_aff = df_it_non_alertees[cols_aff].copy()
+        df_aff = df_it_aujourd[cols_aff].copy()
         df_aff.columns = ['ID', 'Reference', 'Objet', 'Acheteur', 'Lieu', 'Date limite', 'Budget', 'Categorie', 'Mots-cles']
         df_aff['Date limite'] = df_aff['Date limite'].dt.strftime('%d/%m/%Y %H:%M')
         st.dataframe(df_aff, use_container_width=True, height=500)
-        st.markdown(f"<p style='color:#f7941e;font-weight:600;'>📬 {it_non_alertees} offres IT en attente d'alerte</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:#f7941e;font-weight:600;'>📬 {nb_it_jour} offres IT du jour</p>", unsafe_allow_html=True)
 
     # ─── Filtres ───
     st.markdown('<div class="section-title">🔍 Filtres</div>', unsafe_allow_html=True)
