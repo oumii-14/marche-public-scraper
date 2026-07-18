@@ -566,19 +566,25 @@ else:
     derniere_alerte = Alerte.objects.order_by('-date_envoi').first()
     date_derniere = derniere_alerte.date_envoi.strftime('%d/%m/%Y a %H:%M') if derniere_alerte else "Aucune"
 
-    if it_non_alertees > 0:
-        st.markdown(f"""
-        <div style="background:linear-gradient(135deg,#003366 0%,#001a33 100%);border-radius:10px;padding:16px 22px;margin:16px 0;display:flex;align-items:center;justify-content:space-between;">
+    st.markdown(f"""
+    <div style="background:#003366;border-radius:10px;padding:14px 20px;margin:12px 0;display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:24px;">📬</span>
             <div>
-                <span style="color:white;font-size:15px;font-weight:700;">📬 Nouvelles offres IT non alertees</span><br>
-                <span style="color:#f7941e;font-size:22px;font-weight:800;">{it_non_alertees} offres</span>
-                <span style="color:#7fb3e0;font-size:12px;margin-left:8px;">Derniere alerte : {date_derniere}</span>
+                <span style="color:white;font-size:14px;font-weight:600;">Nouvelles offres IT non alertees</span><br>
+                <span style="color:#f7941e;font-size:20px;font-weight:800;">{it_non_alertees} offres IT</span>
+                <span style="color:#7fb3e0;font-size:11px;margin-left:8px;">non encore alertees</span>
             </div>
-        </div>""", unsafe_allow_html=True)
+        </div>
+        <div style="text-align:right;">
+            <span style="background:#f7941e;color:#003366;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;">🔥 Nouveau</span><br>
+            <span style="color:#7fb3e0;font-size:11px;margin-top:4px;display:block;">Derniere alerte : {date_derniere}</span>
+        </div>
+    </div>""", unsafe_allow_html=True)
 
-        if st.button("📋 Voir les {0} offres IT non alertees".format(it_non_alertees), use_container_width=True):
-            st.session_state['voir_non_alertees'] = True
-            st.rerun()
+    if st.button("📋 Voir les {0} offres IT non alertees".format(it_non_alertees), use_container_width=True):
+        st.session_state['voir_non_alertees'] = True
+        st.rerun()
 
     if st.session_state.get('voir_non_alertees'):
         st.markdown('<div class="section-title">📬 Offres IT non alertees</div>', unsafe_allow_html=True)
