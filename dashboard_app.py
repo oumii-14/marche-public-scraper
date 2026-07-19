@@ -407,7 +407,7 @@ elif vue == 'graphes':
     st.markdown('<div class="section-title">Mots-cles les plus utilises (offres IT)</div>', unsafe_allow_html=True)
     if not df_filtre.empty:
         IT_df = df_filtre[df_filtre['est_informatique'] == True].copy()
-        mots_series = IT_df['mots_cles'].str.split(',\s*').explode().str.strip()
+        mots_series = IT_df['mots_cles'].str.split(r',\s*').explode().str.strip()
         mots_series = mots_series[mots_series != '']
         if not mots_series.empty:
             top_mots = mots_series.value_counts().head(10)
@@ -685,7 +685,7 @@ else:
     st.markdown('<div class="section-title">Mots-cles les plus utilises (offres IT)</div>', unsafe_allow_html=True)
     if not df_filtre.empty:
         IT_df = df_filtre[df_filtre['est_informatique'] == True].copy()
-        mots_series = IT_df['mots_cles'].str.split(',\s*').explode().str.strip()
+        mots_series = IT_df['mots_cles'].str.split(r',\s*').explode().str.strip()
         mots_series = mots_series[mots_series != '']
         if not mots_series.empty:
             top_mots = mots_series.value_counts().head(10)
