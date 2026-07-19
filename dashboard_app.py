@@ -562,15 +562,16 @@ else:
     from django.utils import timezone
     from datetime import timedelta
     aujourd_hui = timezone.now().date()
-    df['date_pub_date'] = pd.to_datetime(df['date_publication']).dt.date
-    df_it_aujourd = df[(df['est_informatique'] == True) & (df['date_pub_date'] == aujourd_hui)]
-    nb_it_jour = len(df_it_aujourd)
     derniere_alerte = Alerte.objects.order_by('-date_envoi').first()
     if derniere_alerte:
         date_local = derniere_alerte.date_envoi + timedelta(hours=1)
         date_derniere = date_local.strftime('%d/%m/%Y a %H:%M')
+        alertes_du_jour = Alerte.objects.filter(date_envoi__date=derniere_alerte.date_envoi.date()).values_list('consultation_id', flat=True)
+        df_it_jour = df[(df['est_informatique'] == True) & (df['id'].isin(alertes_du_jour))]
     else:
         date_derniere = "Aucune"
+        df_it_jour = df[(df['est_informatique'] == True) & (False)]
+    nb_it_jour = len(df_it_jour)
     nb_total_it = df[df['est_informatique'] == True].shape[0]
 
     st.markdown(f"""
@@ -578,8 +579,8 @@ else:
         <div style="display:flex;align-items:center;gap:12px;">
             <span style="font-size:24px;">📬</span>
             <div>
-                <span style="color:white;font-size:14px;font-weight:600;">Nouvelles offres IT du jour ({aujourd_hui.strftime('%d/%m/%Y')})</span><br>
-                <span style="color:#f7941e;font-size:20px;font-weight:800;">{nb_it_jour} offres IT detectees</span>
+                <span style="color:white;font-size:14px;font-weight:600;">Nouvelles offres IT alertees ({aujourd_hui.strftime('%d/%m/%Y')})</span><br>
+                <span style="color:#f7941e;font-size:20px;font-weight:800;">{nb_it_jour} offres IT</span>
                 <span style="color:#7fb3e0;font-size:11px;margin-left:8px;">| {nb_total_it} offres IT en base</span>
             </div>
         </div>
@@ -589,22 +590,22 @@ else:
         </div>
     </div>""", unsafe_allow_html=True)
 
-    if nb_it_jour > 0 and st.button("📋 Voir les {0} offres IT du jour".format(nb_it_jour), use_container_width=True):
+    if nb_it_jour > 0 and st.button("📋 Voir les {0} offres IT alertees".format(nb_it_jour), use_container_width=True):
         st.session_state['voir_non_alertees'] = True
         st.rerun()
 
     if st.session_state.get('voir_non_alertees'):
-        st.markdown(f'<div class="section-title">📬 Offres IT du jour ({aujourd_hui.strftime("%d/%m/%Y")})</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="section-title">📬 Offres IT alertees ({aujourd_hui.strftime("%d/%m/%Y")})</div>', unsafe_allow_html=True)
         if st.button("⬅️ Retour au Dashboard"):
             st.session_state['voir_non_alertees'] = False
             st.rerun()
 
         cols_aff = ['id', 'reference', 'objet', 'acheteur', 'lieu', 'date_limite', 'budget', 'categorie', 'mots_cles']
-        df_aff = df_it_aujourd[cols_aff].copy()
+        df_aff = df_it_jour[cols_aff].copy()
         df_aff.columns = ['ID', 'Reference', 'Objet', 'Acheteur', 'Lieu', 'Date limite', 'Budget', 'Categorie', 'Mots-cles']
         df_aff['Date limite'] = df_aff['Date limite'].dt.strftime('%d/%m/%Y %H:%M')
         st.dataframe(df_aff, use_container_width=True, height=500)
-        st.markdown(f"<p style='color:#f7941e;font-weight:600;'>📬 {nb_it_jour} offres IT du jour</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:#f7941e;font-weight:600;'>📬 {nb_it_jour} offres IT alertees</p>", unsafe_allow_html=True)
 
     # ─── Filtres ───
     st.markdown('<div class="section-title">🔍 Filtres</div>', unsafe_allow_html=True)
