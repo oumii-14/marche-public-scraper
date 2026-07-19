@@ -564,8 +564,7 @@ else:
     aujourd_hui = timezone.now().date()
     derniere_alerte = Alerte.objects.order_by('-date_envoi').first()
     if derniere_alerte:
-        date_local = derniere_alerte.date_envoi + timedelta(hours=1)
-        date_derniere = date_local.strftime('%d/%m/%Y a %H:%M')
+        date_derniere = derniere_alerte.date_envoi.strftime('%d/%m/%Y a %H:%M')
         alertes_du_jour = Alerte.objects.filter(date_envoi__date=derniere_alerte.date_envoi.date()).values_list('consultation_id', flat=True)
         df_it_jour = df[(df['est_informatique'] == True) & (df['id'].isin(alertes_du_jour))]
     else:
@@ -708,7 +707,7 @@ else:
             for h in historique:
                 h_data.append({'Date': h.date_scraping, 'Consultations': h.nb_consultations, 'IT': h.nb_offres_it, 'Statut': h.statut})
             h_df = pd.DataFrame(h_data)
-            h_df["Date"] = (h_df["Date"] + timedelta(hours=1)).dt.strftime("%d/%m %H:%M")
+            h_df["Date"] = h_df["Date"].dt.strftime("%d/%m %H:%M")
             st.dataframe(h_df, use_container_width=True, height=250)
         else:
             st.warning("Aucun historique de scraping")
