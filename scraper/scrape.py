@@ -393,6 +393,22 @@ def scraper_consultations():
     finally:
         driver.quit()
 
+    # ─── Verification des annulations sur les offres existantes ───
+    print("\n--- Verification des annulations ---")
+    from scraper.models import Consultation
+    offres_existantes = Consultation.objects.filter(est_annule=False)
+    nb_annulees = 0
+    for offre in offres_existantes:
+        try:
+            if 'annul' in (offre.objet or '').lower():
+                offre.est_annule = True
+                offre.save(update_fields=['est_annule'])
+                nb_annulees += 1
+                print(f"   [ANNUL] {offre.reference}")
+        except Exception:
+            pass
+    print(f"   {nb_annulees} offre(s) annulee(s) detectee(s)")
+
     # Enregistrer l'historique du scraping
     config = Configuration.objects.first()
     HistoriqueScraping.objects.create(
