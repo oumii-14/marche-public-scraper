@@ -3,6 +3,7 @@ Module de Visualisation - Dashboard Streamlit
 """
 import os, sys, django, pandas as pd, streamlit as st
 from datetime import datetime, date, timedelta
+from django.utils import timezone
 from streamlit_autorefresh import st_autorefresh
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -164,6 +165,9 @@ with st.sidebar:
     if st.button("📊 Dashboard", use_container_width=True):
         st.session_state['vue'] = 'dashboard'
         st.rerun()
+    if st.button("⏰ Offres urgentes", use_container_width=True):
+        st.session_state['vue'] = 'urgentes'
+        st.rerun()
     if st.button("📈 Graphiques", use_container_width=True):
         st.session_state['vue'] = 'graphes'
         st.rerun()
@@ -313,6 +317,70 @@ if vue == 'offres':
     except ImportError:
         csv = df_filtre.to_csv(index=False, sep=';', encoding='utf-8-sig')
         st.download_button(label="📥 Telecharger (CSV)", data=csv.encode('utf-8-sig'), file_name='offres_marches_publics.csv', mime='text/csv', use_container_width=True)
+
+# ═══════════════════════════════════════════════════════════════
+# VUE OFFRES URGENTES
+# ═══════════════════════════════════════════════════════════════
+elif vue == 'urgentes':
+    aujourd_hui = timezone.now().date()
+    dans_7_jours = aujourd_hui + timedelta(days=7)
+
+    df_date = df[df['date_limite'].notna()].copy()
+    critiques = df_date[(df_date['est_informatique'] == True) & (df_date['date_limite'].dt.date == aujourd_hui)]
+    urgentes = df_date[(df_date['est_informatique'] == True) & (df_date['date_limite'].dt.date > aujourd_hui) & (df_date['date_limite'].dt.date <= dans_7_jours)]
+    a_suivre = df_date[(df_date['est_informatique'] == True) & (df_date['date_limite'].dt.date > dans_7_jours)]
+    traitees = df[(df['est_informatique'] == True) & (df['est_annule'] == True)]
+
+    st.markdown("""
+    <div style="background:linear-gradient(135deg,#003366 0%,#001a33 100%);padding:14px 22px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+            <h2 style="color:white;margin:0;font-size:18px;font-weight:700;">⏰ Offres urgentes</h2>
+            <p style="color:#7fb3e0;margin:2px 0 0 0;font-size:12px;">Classement par niveau d'urgence</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("⬅️ Retour au Dashboard"):
+        st.session_state['vue'] = 'dashboard'
+        st.rerun()
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("🔴 CRITIQUE", len(critiques), "Expire aujourd'hui")
+    c2.metric("🟡 URGENT", len(urgentes), "Expire dans 2-7j")
+    c3.metric("🟢 A SUIVRE", len(a_suivre), "Expire > 7j")
+    c4.metric("✅ TRAITEES", len(traitees), "Offres traitees")
+
+    def afficher_categorie(titre, emoji, couleur, data):
+        if len(data) > 0:
+            st.markdown(f'<div style="margin:20px 0 10px 0;"><h3 style="color:{couleur};margin:0;">{emoji} {titre} ({len(data)})</h3></div>', unsafe_allow_html=True)
+            for _, row in data.iterrows():
+                ref = row.get('reference', 'N/A')
+                objet = row.get('objet', 'N/A')
+                acheteur = row.get('acheteur', 'N/A')
+                date_lim = row.get('date_limite', None)
+                if date_lim and hasattr(date_lim, 'strftime'):
+                    date_lim = date_lim.strftime('%d/%m/%Y')
+                else:
+                    date_lim = str(date_lim)[:10] if date_lim else 'N/A'
+                lieu = row.get('lieu', 'N/A')
+                st.markdown(f"""
+                <div style="background:white;border-left:4px solid {couleur};padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <span style="color:#003366;font-weight:700;font-size:13px;">Réf. {ref}</span>
+                            <span style="color:#666;font-size:12px;margin-left:12px;">📅 {date_lim}</span>
+                            <span style="color:#666;font-size:12px;margin-left:12px;">📍 {lieu}</span>
+                        </div>
+                    </div>
+                    <div style="color:#333;font-size:13px;margin-top:6px;font-weight:500;">{objet}</div>
+                    <div style="color:#888;font-size:11px;margin-top:4px;">🏢 {acheteur}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+    afficher_categorie("OFFRES CRITIQUES - Expire aujourd'hui", "🔴", "#e74c3c", critiques)
+    afficher_categorie("OFFRES URGENTES - Expire dans 2-7 jours", "🟡", "#f39c12", urgentes)
+    afficher_categorie("OFFRES A SUIVRE - Expire dans > 7 jours", "🟢", "#27ae60", a_suivre)
+    afficher_categorie("OFFRES TRAITEES / ANNULEES", "✅", "#3498db", traitees)
 
 # ═══════════════════════════════════════════════════════════════
 # VUE GRAPHIQUES
@@ -558,9 +626,6 @@ else:
         </div>""", unsafe_allow_html=True)
 
     # ─── Banner offres IT du jour ───
-    from scraper.models import Alerte
-    from django.utils import timezone
-    from datetime import timedelta
     aujourd_hui = timezone.now().date()
     derniere_alerte = Alerte.objects.order_by('-date_envoi').first()
     if derniere_alerte:
