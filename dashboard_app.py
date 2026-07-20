@@ -707,7 +707,7 @@ else:
             for h in historique:
                 h_data.append({'Date': h.date_scraping, 'Consultations': h.nb_consultations, 'IT': h.nb_offres_it, 'Statut': h.statut})
             h_df = pd.DataFrame(h_data)
-            h_df["Date"] = h_df["Date"].dt.strftime("%d/%m %H:%M")
+            h_df["Date"] = pd.to_datetime(h_df["Date"]).dt.tz_convert('Africa/Casablanca').dt.strftime("%d/%m %H:%M")
             st.dataframe(h_df, use_container_width=True, height=250)
         else:
             st.warning("Aucun historique de scraping")
