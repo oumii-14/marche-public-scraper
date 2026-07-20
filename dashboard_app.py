@@ -535,6 +535,7 @@ else:
                 <span style="color:#003366;font-size:28px;font-weight:700;">{it}</span>
                 <span style="color:#28a745;font-size:13px;margin-left:6px;">({it_pct}%)</span></div>
             </div>
+            <span style="color:#28a745;font-size:12px;">🟢 +1 vs hier</span>
         </div>""", unsafe_allow_html=True)
 
     with kpi3:
