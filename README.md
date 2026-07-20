@@ -248,6 +248,10 @@ Le dashboard affiche un banner en haut avec :
 - Heure de la dernière alerte email
 - Bouton pour voir la liste des offres IT du jour
 
+### Détection des annulations
+
+Après chaque scraping, le script vérifie les offres existantes en base. Si le texte de l'offre contient "annul", le champ `est_annule` est mis à jour automatiquement. Ainsi les offres annulées sur le site sont reflétées dans le dashboard.
+
 ### Automatisation (Task Scheduler)
 
 | Tâche | Heure | Fichier |
