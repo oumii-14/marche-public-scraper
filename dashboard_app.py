@@ -577,9 +577,9 @@ else:
     urgentes = df[df['date_limite'].notna() & (df['date_limite'] < pd.Timestamp.now(tz='UTC'))].shape[0]
     it_pct = round(it/total*100, 1) if total else 0
 
-    hier = df[df['date_publication'].dt.date == (datetime.now() - timedelta(1)).date()]
-    total_hier = len(hier)
-    it_hier = hier[hier['est_informatique'] == True].shape[0] if not hier.empty else 0
+    ajd = df[df['date_publication'].dt.date == timezone.now().date()]
+    total_ajd = len(ajd)
+    it_ajd = ajd[ajd['est_informatique'] == True].shape[0]
 
     st.markdown('<div id="stats" class="section-title">Statistiques generales</div>', unsafe_allow_html=True)
 
@@ -592,7 +592,7 @@ else:
                 <div><span style="color:#666;font-size:13px;">📄 Total offres</span><br>
                 <span style="color:#003366;font-size:28px;font-weight:700;">{total}</span></div>
             </div>
-            <span style="color:#28a745;font-size:12px;">🟢 +{total_hier} vs hier</span>
+            <span style="color:#28a745;font-size:12px;">🟢 +{total_ajd} vs hier</span>
         </div>""", unsafe_allow_html=True)
 
     with kpi2:
@@ -603,7 +603,7 @@ else:
                 <span style="color:#003366;font-size:28px;font-weight:700;">{it}</span>
                 <span style="color:#28a745;font-size:13px;margin-left:6px;">({it_pct}%)</span></div>
             </div>
-            <span style="color:#28a745;font-size:12px;">🟢 +1 vs hier</span>
+            <span style="color:#28a745;font-size:12px;">🟢 +{it_ajd} vs hier</span>
         </div>""", unsafe_allow_html=True)
 
     with kpi3:
@@ -629,7 +629,8 @@ else:
     aujourd_hui = timezone.now().date()
     derniere_alerte = Alerte.objects.order_by('-date_envoi').first()
     if derniere_alerte:
-        date_derniere = derniere_alerte.date_envoi.strftime('%d/%m/%Y a %H:%M')
+        import zoneinfo
+        date_derniere = derniere_alerte.date_envoi.astimezone(zoneinfo.ZoneInfo('Africa/Casablanca')).strftime('%d/%m/%Y a %H:%M')
         alertes_du_jour = Alerte.objects.filter(date_envoi__date=derniere_alerte.date_envoi.date()).values_list('consultation_id', flat=True)
         df_it_jour = df[(df['est_informatique'] == True) & (df['id'].isin(alertes_du_jour))]
     else:

@@ -5,6 +5,7 @@ Envoi automatique d'emails pour les nouvelles offres IT
 
 import os, sys, django
 from datetime import datetime
+import zoneinfo
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marche_public.settings')
@@ -55,7 +56,7 @@ def envoyer_alertes():
     <body style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
     <div style="max-width: 800px; margin: auto;">
         <h2 style="color: #2c3e50;">📋 Recaptulatif des offres IT</h2>
-        <p style="color: #7f8c8d;">Date : {datetime.now().strftime('%d/%m/%Y %H:%M')}</p>
+        <p style="color: #7f8c8d;">Date : {datetime.now(zoneinfo.ZoneInfo('Africa/Casablanca')).strftime('%d/%m/%Y %H:%M')}</p>
         <p style="color: #7f8c8d;">Total : <strong>{len(nouvelles)}</strong> nouvelle(s) offre(s) IT detectee(s)</p>
 
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
