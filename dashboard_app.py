@@ -287,20 +287,26 @@ if vue == 'offres':
     ]
     df_filtre = df_filtre.sort_values('id', ascending=True)
 
-    cols_aff = ['id', 'reference', 'objet', 'acheteur', 'lieu', 'date_limite', 'budget', 'est_informatique', 'est_annule', 'categorie', 'mots_cles']
+    cols_aff = ['id', 'reference', 'objet', 'acheteur', 'lieu', 'date_limite', 'budget', 'date_publication', 'est_informatique', 'est_annule', 'categorie', 'mots_cles']
     df_aff = df_filtre[cols_aff].copy()
-    df_aff.columns = ['ID', 'Reference', 'Objet', 'Acheteur', 'Lieu', 'Date limite', 'Budget', 'IT', 'Annule', 'Categorie', 'Mots-cles']
-
-    def color_row_offres(row):
-        if row['Annule'] == ' Oui':
-            return ['background-color: #fce4ec'] * len(row)
-        elif row['IT'] == ' IT':
-            return ['background-color: #e8f5e9'] * len(row)
-        return [''] * len(row)
+    df_aff.columns = ['ID', 'Reference', 'Objet', 'Acheteur', 'Lieu', 'Date limite', 'Budget', 'Date pub', 'IT', 'Annule', 'Categorie', 'Mots-cles']
 
     df_aff['IT'] = df_aff['IT'].map({True: '🟢 IT', False: ''})
     df_aff['Annule'] = df_aff['Annule'].map({True: '🔴 Annule', False: ''})
+    df_aff['Nouveau'] = (df_aff['Date pub'].dt.tz_convert('Africa/Casablanca') >= (pd.Timestamp.now(tz='Africa/Casablanca') - pd.Timedelta(hours=1))).map({True: '🆕 Nouveau', False: ''})
+
+    def color_row_offres(row):
+        if row['Annule'] == '🔴 Annule':
+            return ['background-color: #fce4ec'] * len(row)
+        elif row['IT'] == '🟢 IT':
+            return ['background-color: #e8f5e9'] * len(row)
+        elif row['Nouveau'] == '🆕 Nouveau':
+            return ['background-color: #fff3cd'] * len(row)
+        return [''] * len(row)
+
     df_aff['Date limite'] = df_aff['Date limite'].dt.strftime('%d/%m/%Y %H:%M')
+    df_aff['Date pub'] = df_aff['Date pub'].dt.tz_convert('Africa/Casablanca').dt.strftime('%d/%m/%Y %H:%M')
+    df_aff = df_aff[['ID', 'Reference', 'Nouveau', 'Objet', 'Acheteur', 'Lieu', 'Date limite', 'Budget', 'IT', 'Annule', 'Categorie', 'Mots-cles']]
 
     st.markdown(f"<p style='color:#003366;font-weight:600;'>📊 {len(df_filtre)} resultat(s)</p>", unsafe_allow_html=True)
     st.dataframe(df_aff.style.apply(color_row_offres, axis=1), use_container_width=True, height=600)

@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+db.sqlite3
+backup_marche_public.dump
+fixtures_marche.json
+marche_public.sql
+.env
+.streamlit/
+logs/
+.vscode/

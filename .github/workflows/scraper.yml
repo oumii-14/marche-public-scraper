@@ -1,0 +1,53 @@
+name: Scraper Marches Publics
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+
+      - name: Installer les dependances
+        run: pip install -r requirements.txt
+
+      - name: Migrations
+        env:
+          DB_NAME: postgres
+          DB_USER: postgres.namhwxeayueispjsxvpp
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: aws-0-eu-central-1.pooler.supabase.com
+          DB_PORT: '5432'
+        run: python manage.py migrate
+
+      - name: Scraping
+        env:
+          DB_NAME: postgres
+          DB_USER: postgres.namhwxeayueispjsxvpp
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: aws-0-eu-central-1.pooler.supabase.com
+          DB_PORT: '5432'
+          HEADLESS: '1'
+        run: python scraper/scrape.py
+
+      - name: Alertes email
+        env:
+          DB_NAME: postgres
+          DB_USER: postgres.namhwxeayueispjsxvpp
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: aws-0-eu-central-1.pooler.supabase.com
+          DB_PORT: '5432'
+          EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+        run: python scraper/alertes.py
