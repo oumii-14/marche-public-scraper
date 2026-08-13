@@ -9,3 +9,4 @@ marche_public.sql
 .streamlit/
 logs/
 .vscode/
+*.bat
