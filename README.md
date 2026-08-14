@@ -23,7 +23,7 @@ Dashboard Streamlit local (lit Supabase via .env)
 
 ### Fonctionnement
 
-- **Scheduled** tous les jours à `09:00 UTC` (= `10:00` heure Maroc), déclenchable manuellement via `workflow_dispatch`
+- **Scheduled** tous les jours à `07:00 UTC` (= `08:00` heure Maroc), déclenchable manuellement via `workflow_dispatch`
 - Le runner installe Chrome en **mode headless** (variable `HEADLESS=1` sans impact sur le Windows local)
 - Enchaîne : `migrate` → `scrape.py` → `alertes.py`
 - Les identifiants sensibles sont stockés dans les **secrets GitHub** : `DB_PASSWORD`, `EMAIL_HOST_PASSWORD`
@@ -305,7 +305,7 @@ Après chaque scraping, le script vérifie les offres existantes en base. Si le 
 
 | Outil | Fréquence | Fichier |
 |-------|-----------|---------|
-| Scraper + Alertes | Tous les jours à 10:00 (heure Maroc) | `.github/workflows/scraper.yml` |
+| Scraper + Alertes | Tous les jours à 08:00 (heure Maroc) | `.github/workflows/scraper.yml` |
 
 L'ancienne tâche Windows `MarchePublic_Scraper` (Task Scheduler) est **désactivée** : le scraping tourne désormais dans le cloud, sans dépendre du PC.
 
@@ -343,3 +343,4 @@ scraper/start_dashboard.bat
 - Automatisation configurée (une seule tâche à 10h00)
 - Emails HTML avec lien direct vers le dashboard
 - Projet prêt pour la production
+
