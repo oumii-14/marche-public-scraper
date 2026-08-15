@@ -3,52 +3,6 @@
 Outil automatisé de surveillance des appels d'offres publiés sur `marchespublics.gov.ma`, avec détection des opportunités IT et alertes en temps réel.
 
 ---
-
-## Semaine 5 — Migration Cloud (Supabase + GitHub Actions) ✅
-
-Le scraping ne dépend plus du PC local : il tourne **24/7 sur GitHub Actions** et écrit directement dans une **base PostgreSQL Supabase** (cloud).
-
-### Architecture
-
-```
-marchespublics.gov.ma
-        │
-        ▼
-GitHub Actions (workflow .github/workflows/scraper.yml)
-   Scraping ──▶ Supabase PostgreSQL (pooler eu-central-1)
-        └────▶ Email SMTP Gmail (alertes IT)
-        ▼
-Dashboard Streamlit local (lit Supabase via .env)
-```
-
-### Fonctionnement
-
-- **Scheduled** tous les jours à `07:00 UTC` (= `08:00` heure Maroc), déclenchable manuellement via `workflow_dispatch`
-- Le runner installe Chrome en **mode headless** (variable `HEADLESS=1` sans impact sur le Windows local)
-- Enchaîne : `migrate` → `scrape.py` → `alertes.py`
-- Les identifiants sensibles sont stockés dans les **secrets GitHub** : `DB_PASSWORD`, `EMAIL_HOST_PASSWORD`
-- Chaque run enregistre un **HistoriqueScraping** dans la base cloud
-
-### Configuration locale (dashboard)
-
-Le fichier `.env` (ignoré par git) permet au dashboard de lire la base cloud :
-
-```bash
-DB_NAME=postgres
-DB_USER=postgres.namhwxeayueispjsxvpp
-DB_PASSWORD=<mot de passe>
-DB_HOST=aws-0-eu-central-1.pooler.supabase.com
-DB_PORT=5432
-```
-
-`marche_public/settings.py` lit `DB_*`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` et `DEFAULT_FROM_EMAIL` depuis l'environnement/`.env`, avec fallback sur les valeurs locales.
-
-### La tâche Windows (`MarchePublic_Scraper`) est désactivée
-
-Le scraping local est coupé pour éviter les doublons. GitHub Actions en est désormais le seul exécutant.
-
----
-
 ## Semaine 1 — Conception et base de données ✅
 
 ### 1. Use Case
@@ -327,6 +281,50 @@ Ou via le script :
 ```bash
 scraper/start_dashboard.bat
 ```
+## Semaine 5 — Migration Cloud (Supabase + GitHub Actions) ✅
+
+Le scraping ne dépend plus du PC local : il tourne **24/7 sur GitHub Actions** et écrit directement dans une **base PostgreSQL Supabase** (cloud).
+
+### Architecture
+
+```
+marchespublics.gov.ma
+        │
+        ▼
+GitHub Actions (workflow .github/workflows/scraper.yml)
+   Scraping ──▶ Supabase PostgreSQL (pooler eu-central-1)
+        └────▶ Email SMTP Gmail (alertes IT)
+        ▼
+Dashboard Streamlit local (lit Supabase via .env)
+```
+
+### Fonctionnement
+
+- **Scheduled** tous les jours à `07:00 UTC` (= `08:00` heure Maroc), déclenchable manuellement via `workflow_dispatch`
+- Le runner installe Chrome en **mode headless** (variable `HEADLESS=1` sans impact sur le Windows local)
+- Enchaîne : `migrate` → `scrape.py` → `alertes.py`
+- Les identifiants sensibles sont stockés dans les **secrets GitHub** : `DB_PASSWORD`, `EMAIL_HOST_PASSWORD`
+- Chaque run enregistre un **HistoriqueScraping** dans la base cloud
+
+### Configuration locale (dashboard)
+
+Le fichier `.env` (ignoré par git) permet au dashboard de lire la base cloud :
+
+```bash
+DB_NAME=postgres
+DB_USER=postgres.namhwxeayueispjsxvpp
+DB_PASSWORD=<mot de passe>
+DB_HOST=aws-0-eu-central-1.pooler.supabase.com
+DB_PORT=5432
+```
+
+`marche_public/settings.py` lit `DB_*`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` et `DEFAULT_FROM_EMAIL` depuis l'environnement/`.env`, avec fallback sur les valeurs locales.
+
+### La tâche Windows (`MarchePublic_Scraper`) est désactivée
+
+Le scraping local est coupé pour éviter les doublons. GitHub Actions en est désormais le seul exécutant.
+
+---
 
 ---
 
